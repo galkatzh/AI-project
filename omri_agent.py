@@ -7,17 +7,24 @@ class NewAgent(BaseAgent):
 
     def __init__(self, *args, **kwargs):
         super(SimpleAgent, self).__init__(*args, **kwargs)
-        _q_values = dict()
-        _epsilon = 0.2
+        self.last_action = 0
+        self.last_state = None
+        self.q_values = dict()
+        self.epsilon = 0.2
+        self.discount = 1
 
     def extract_state(self):
-        pass
+        return obs
 
-    def update_q_value(self, state, action, reward):
+    def update_q_value(self, state, action, next_state, reward):
         pass
 
     def act(self, obs, action_space):
-        if flip_coin(_epsilon):
-            return np.argmax(_q_values[extract_state(obs)])
+        cur_state = self.extract_state(obs)
+        self.update_q_value(self.last_state, self.last_action, cur_state, reward)
+        self.last_state = cur_state
+        if flip_coin(epsilon):
+            self.last_action = np.argmax(q_values[extract_state(obs)])
         else:
-            return action_space.sample()
+            self.last_action = action_space.sample()
+        return self.last_action
