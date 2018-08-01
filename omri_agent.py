@@ -14,6 +14,7 @@ class NewAgent(BaseAgent):
     # in train script, call update_q_values. not in act()
     # - store q values in file
     # - how to get start state?
+    # - in epsiode end, reset cur, last state and action
 
     def __init__(self, *args, **kwargs):
         super(NewAgent, self).__init__(*args, **kwargs)
@@ -25,7 +26,6 @@ class NewAgent(BaseAgent):
         self.epsilon = 0.8
         self.discount = 1
         self.alpha = 1
-        print('sdfsdfsdfs')
 
     def extract_state(self, obs):
         def is_bomb_adjacent(board, pos):
@@ -34,12 +34,17 @@ class NewAgent(BaseAgent):
             danger = [0] * len(adj)
             for i, (x,y) in enumerate(adj):
                 if x>=0 and x<=10 and y>=0 and y<=10:
-                    if board[x,y] == 3:
+                    if board[x,y] == 1:
                         danger[i] = 1
             return danger
-        return is_bomb_adjacent(obs["board"], obs["position"])
+        return is_bomb_adjacent(obs["bomb_life"], obs["position"])
 
     def update_q_value(self, reward):
+#        if (0,0,1,0,0) in self.q_values:
+#            if -1 in self.q_values[(0,0,1,0,0)]:
+#                print("ASDASDASDASDASDASDASDASDASDASDASDASDASDa")
+#            print (self.q_values[(0,0,1,0,0)])
+#            print(reward)
         if tuple(self.cur_state) not in self.q_values:
             self.q_values[tuple(self.cur_state)] = [0] * 6
         if tuple(self.last_state) not in self.q_values:
@@ -51,8 +56,9 @@ class NewAgent(BaseAgent):
         
 
     def act(self, obs, action_space):
-        #import IPython
-        #IPython.embed()
+#        import IPython
+#        IPython.embed()
+#        print(obs['bomb_life'])
         self.last_action = self.new_action
         self.last_state = self.cur_state
         self.cur_state = self.extract_state(obs)

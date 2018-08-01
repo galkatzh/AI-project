@@ -32,7 +32,7 @@ def main():
             bla.update_q_value(reward[-1])
             #print(reward, done, info)
         print(bla.q_values)
-        print('Episode {} finished'.format(i_episode))
+        print('Episode {} finished with rewards: {}'.format(i_episode, reward))
     env.close()
 
 
