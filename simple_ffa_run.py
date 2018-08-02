@@ -2,6 +2,7 @@ import pommerman
 from pommerman import agents
 from omri_agent import NewAgent
 
+DEBUG =False
 
 def main():
     # Print all possible environments in the Pommerman registry
@@ -27,7 +28,7 @@ def main():
         state = env.reset()
         done = False
         while not done:
-            if reward[-1] == 0:
+            if DEBUG and reward[-1] == 0:
                 env.render()
                 print(bla.cur_state)
                 input()

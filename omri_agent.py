@@ -16,6 +16,8 @@ class NewAgent(BaseAgent):
     # - store q values in file
     # - how to get start state?
     # - check flames instead of bombs
+    # - change state to dictonary, instead of tuple?
+    # -  make sure shown state is cur_state
 
     def __init__(self, *args, **kwargs):
         super(NewAgent, self).__init__(*args, **kwargs)
@@ -69,14 +71,14 @@ class NewAgent(BaseAgent):
 #            print(reward)
         if self.done:
             return
-        if tuple(self.cur_state) not in self.q_values:
-            self.q_values[tuple(self.cur_state)] = [0] * 6
-        if tuple(self.last_state) not in self.q_values:
-            self.q_values[tuple(self.last_state)] = [0] * 6
-        best_next_action = np.argmax(self.q_values[tuple(self.cur_state)])    
-        td_target = reward + self.discount * self.q_values[tuple(self.cur_state)][best_next_action]
-        td_delta = td_target - self.q_values[tuple(self.last_state)][self.last_action]
-        self.q_values[tuple(self.last_state)][self.last_action] += self.alpha * td_delta
+        if self.cur_state not in self.q_values:
+            self.q_values[self.cur_state] = [0] * 6
+        if self.last_state not in self.q_values:
+            self.q_values[self.last_state] = [0] * 6
+        best_next_action = np.argmax(self.q_values[self.cur_state])    
+        td_target = reward + self.discount * self.q_values[self.cur_state][best_next_action]
+        td_delta = td_target - self.q_values[self.last_state][self.last_action]
+        self.q_values[self.last_state][self.last_action] += self.alpha * td_delta
         if reward != 0:
             self.episode_end();
         
@@ -91,7 +93,7 @@ class NewAgent(BaseAgent):
         self.cur_state = self.extract_state(obs)
         #self.update_q_value(self.last_state, self.last_action, cur_state)
         if self.extract_state(obs) in self.q_values and flip_coin(self.epsilon):
-            self.new_action = np.argmax(self.q_values[tuple(self.extract_state(obs))])
+            self.new_action = np.argmax(self.q_values[self.extract_state(obs)])
         else:
             self.new_action = action_space.sample()
         return self.new_action
