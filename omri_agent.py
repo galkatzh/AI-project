@@ -15,7 +15,7 @@ class NewAgent(BaseAgent):
     # in train script, call update_q_values. not in act()
     # - store q values in file
     # - how to get start state?
-    # - in epsiode end, reset cur, last state and action
+    # - check flames instead of bombs
 
     def __init__(self, *args, **kwargs):
         super(NewAgent, self).__init__(*args, **kwargs)
