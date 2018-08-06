@@ -2,7 +2,7 @@ import pommerman
 from pommerman import agents
 from omri_agent import NewAgent
 
-DEBUG =False
+DEBUG = False
 
 def main():
     # Print all possible environments in the Pommerman registry
@@ -20,7 +20,7 @@ def main():
         # agents.DockerAgent("pommerman/simple-agent", port=12345),
     ]
     # Make the "Free-For-All" environment using the agent list
-    env = pommerman.make('PommeFFACompetition-v0', agent_list)
+    env = pommerman.make('PommeTeamCompetition-v0', agent_list)
     reward = [0,0,0,0]
 
     # Run the episodes just like OpenAI Gym
@@ -31,13 +31,15 @@ def main():
         bla.set_start_state(env.get_observations()[-1])
         done = False
         while not done:
-            if DEBUG and reward[-1] == 0:
-                env.render()
-                print(bla.cur_state)
 #                input()
             actions = env.act(state)
             state, reward, done, info = env.step(actions)
             bla.update_q_value(reward[-1])
+            
+            if DEBUG and reward[-1] == 0:
+                env.render()
+                print(bla.cur_state)
+#                input()
             
             #print(reward, done, info)
         print(bla.q_values)

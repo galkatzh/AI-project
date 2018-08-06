@@ -5,12 +5,20 @@ import pommerman.utility as util
 import pommerman.constants as consts
 import os.path
 
+
+#TODO:
+    # -  make sure shown state is cur_state
+    # - check flames instead of bombs
+    # - check enemy or wood wall in range
+    # - in functions above, stop if reach rigid
+    # - where powerup
+    
+filename = 'qvalues.npy'
+dirs = [1,2,3,4]  #up, down, left, right    
+
 def flip_coin(p):
     r = random.random()
     return r > p
-
-filename = 'qvalues.npy'
-dirs = [1,2,3,4]  #up, down, left, right
 
 def get_valid_directions(board, pos):
     return tuple([util.is_valid_direction(board, pos, d) for d in dirs])
@@ -21,15 +29,13 @@ def get_bombs(board,pos, all_bombs_strength, bomb_life):
         temp_pos = pos + d
         bomb_range = 0
         while util.position_on_board(board, temp_pos) and not util.position_is_fog(board, tuple(temp_pos)):
-            dangers[i] = util.position_is_fog(board, tuple(temp_pos))
             bomb_range += 1
-            if all_bombs_strength[temp_pos[0],temp_pos[1]] >= bomb_range:
+            if all_bombs_strength[tuple(temp_pos)] >= bomb_range:
                 dangers[i] = min(dangers[i], bomb_life[temp_pos[0],temp_pos[1]])
             temp_pos += d
     return tuple(dangers)
 
 def get_flames(board,pos):
-    
     dangers = [False] * 4
     for i, d in enumerate(dirs):
         new_pos = tuple(util.get_next_position(pos, consts.Action(d)))
@@ -37,15 +43,23 @@ def get_flames(board,pos):
             dangers[i] = True
     return tuple(dangers)
 
-class NewAgent(BaseAgent):
+def get_quarter(pos):
+    r,c = pos
+    quarters = [[1,2],[3,4]]
+    return quarters[r>5][c>5]
+
+def is_enemy_in_range(board, pos, blast_radius, enemies):
+    for d in np.array([[0,1],[0,-1],[1,0],[-1,0]]):
+        for r in range(1,blast_radius+1):
+            temp_pos = tuple(pos + r*d)
+            if util.position_on_board(board, temp_pos) and util.position_is_enemy(board, temp_pos, enemies):
+                return True
+    return False
     
 
-    #TODO:
-    # -  make sure shown state is cur_state
-    # - check flames instead of bombs
-    # - check enemy or wood wall in range
-    # - where powerup
-    # - why use 'any' at is_fog()?
+
+
+class NewAgent(BaseAgent):
 
     def __init__(self, *args, **kwargs):
         super(NewAgent, self).__init__(*args, **kwargs)
@@ -71,16 +85,21 @@ class NewAgent(BaseAgent):
         bomb_life = obs["bomb_life"]
         all_bombs_strength = obs["bomb_blast_strength"]
         can_kick = obs['can_kick']
-        blast_strength = obs['blast_strength']
+        blast_radius = obs['blast_strength']
         ammo = obs['ammo']
         enemies = obs['enemies']
 #        valid_directions = [util.is_valid_direction(board, pos, d) for d in dirs]
+        
         valid_directions = get_valid_directions(board, pos)
         dangerous_bombs = get_bombs(board,pos, all_bombs_strength, bomb_life)
         adjacent_flames = get_flames(board,pos)
+        quarter = get_quarter(pos)
+        enemy_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
+        
 #        import IPython
 #        IPython.embed()
-        state = (valid_directions, dangerous_bombs, adjacent_flames, can_kick, ammo)
+        state = (valid_directions, dangerous_bombs, adjacent_flames,
+                 can_kick, ammo, quarter, enemy_in_range)
         return state
             
     def set_start_state(self, obs):
