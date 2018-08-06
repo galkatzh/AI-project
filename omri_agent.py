@@ -2,21 +2,21 @@ from pommerman.agents import BaseAgent
 import numpy as np
 import random
 import pommerman.utility as util
+import os.path
 
 def flip_coin(p):
     r = random.random()
     return r > p
 
+filename = 'qvalues.npy'
+
 class NewAgent(BaseAgent):
+    
 
     #TODO:
-    # - stop computing after losing (because game keep running)
-    # - when is reward returned, how?
-    # in train script, call update_q_values. not in act()
     # - store q values in file
     # - how to get start state?
     # - check flames instead of bombs
-    # - change state to dictonary, instead of tuple?
     # -  make sure shown state is cur_state
 
     def __init__(self, *args, **kwargs):
@@ -25,11 +25,17 @@ class NewAgent(BaseAgent):
         self.new_action = 0
         self.cur_state = (0,)
         self.last_state = (0,)
-        self.q_values = dict()
         self.epsilon = 0.8
         self.discount = 1
         self.alpha = 1
         self.done = False
+        self.q_values = dict()
+        if os.path.isfile(filename):
+            self.q_values = np.load(filename).item()
+            
+            
+    def save_qvalues(self):
+        np.save(filename, self.q_values)
 
     def extract_state(self, obs):
 #        def is_bomb_adjacent(board, pos):

@@ -39,6 +39,7 @@ def main():
             #print(reward, done, info)
         print(bla.q_values)
         print('Episode {} finished with rewards: {}'.format(i_episode, reward))
+    bla.save_qvalues()
     env.close()
 
 
