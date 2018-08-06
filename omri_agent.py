@@ -14,8 +14,6 @@ class NewAgent(BaseAgent):
     
 
     #TODO:
-    # - store q values in file
-    # - how to get start state?
     # - check flames instead of bombs
     # -  make sure shown state is cur_state
 
@@ -38,16 +36,6 @@ class NewAgent(BaseAgent):
         np.save(filename, self.q_values)
 
     def extract_state(self, obs):
-#        def is_bomb_adjacent(board, pos):
-#            x, y = pos
-#            adj = [(x+1,y),(x-1,y),(x,y+1),(x,y-1),(x,y)]
-#            danger = [0] * len(adj)
-#            for i, (x,y) in enumerate(adj):
-#                if x>=0 and x<=10 and y>=0 and y<=10:
-#                    if board[x,y] == 1:
-#                        danger[i] = 1
-#            return danger
-#        return is_bomb_adjacent(bomb_life, obs["position"])
         dirs = [1,2,3,4]
         board = obs["board"]
         pos = np.array(obs["position"])
@@ -67,14 +55,10 @@ class NewAgent(BaseAgent):
         state = (tuple(valid_directions), tuple(dangers))
         return state
             
-
+    def set_start_state(self, obs):
+        self.cur_state = self.extract_state(obs)
 
     def update_q_value(self, reward):
-#        if (0,0,1,0,0) in self.q_values:
-#            if -1 in self.q_values[(0,0,1,0,0)]:
-#                print("ASDASDASDASDASDASDASDASDASDASDASDASDASDa")
-#            print (self.q_values[(0,0,1,0,0)])
-#            print(reward)
         if self.done:
             return
         if self.cur_state not in self.q_values:
@@ -92,12 +76,10 @@ class NewAgent(BaseAgent):
     def act(self, obs, action_space):
 #        import IPython
 #        IPython.embed()
-#        print(obs['bomb_life'])
         self.done = False
         self.last_action = self.new_action
         self.last_state = self.cur_state
         self.cur_state = self.extract_state(obs)
-        #self.update_q_value(self.last_state, self.last_action, cur_state)
         if self.extract_state(obs) in self.q_values and flip_coin(self.epsilon):
             self.new_action = np.argmax(self.q_values[self.extract_state(obs)])
         else:

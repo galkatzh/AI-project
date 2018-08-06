@@ -26,12 +26,15 @@ def main():
     # Run the episodes just like OpenAI Gym
     for i_episode in range(50):
         state = env.reset()
+#        import IPython
+#        IPython.embed()
+        bla.set_start_state(env.get_observations()[-1])
         done = False
         while not done:
             if DEBUG and reward[-1] == 0:
                 env.render()
                 print(bla.cur_state)
-                input()
+#                input()
             actions = env.act(state)
             state, reward, done, info = env.step(actions)
             bla.update_q_value(reward[-1])
