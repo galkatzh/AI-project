@@ -6,7 +6,7 @@ DEBUG =False
 
 def main():
     # Print all possible environments in the Pommerman registry
-    print(pommerman.registry)
+    print(pommerman.REGISTRY)
     
     bla = NewAgent()
 
