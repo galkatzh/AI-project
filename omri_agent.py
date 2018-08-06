@@ -8,10 +8,9 @@ import os.path
 
 #TODO:
     # -  make sure shown state is cur_state
-    # - check flames instead of bombs
-    # - check enemy or wood wall in range
-    # - in functions above, stop if reach rigid
     # - where powerup
+    # - check if enemies can escape
+    # - use reward for killing other players
     
 filename = 'qvalues.npy'
 dirs = [1,2,3,4]  #up, down, left, right    
@@ -177,4 +176,3 @@ class NewAgent(BaseAgent):
         self.new_action = 0
         self.cur_state = (0,)
         self.last_state = (0,)
-

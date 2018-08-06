@@ -55,7 +55,7 @@ def main():
             if DEBUG and reward[learner_index] == 0:
                 env.render()
                 print(bla.cur_state)
-                input()
+#                input()
             
             #print(reward, done, info)
 #        print(bla.q_values)
