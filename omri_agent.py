@@ -62,8 +62,28 @@ def is_enemy_in_range(board, pos, blast_radius, enemies):
 #            if :
 #                return True
     return False
-    
 
+def is_wood_in_range(board, pos, blast_radius):
+    for d in np.array([[0,1],[0,-1],[1,0],[-1,0]]):
+        r = blast_radius
+        temp_pos = pos + d
+        while r > 0 and util.position_on_board(board, tuple(temp_pos)) and not util.position_is_rigid(board, tuple(temp_pos)):
+            if util.position_is_wood(board, tuple(temp_pos)):
+                return True
+            temp_pos = pos + d
+            r -= 1
+    return False
+    
+def is_thing_in_range(board, pos, blast_radius, enemies):
+    for d in np.array([[0,1],[0,-1],[1,0],[-1,0]]):
+        r = blast_radius
+        temp_pos = pos + d
+        while r > 0 and util.position_on_board(board, tuple(temp_pos)) and not util.position_is_rigid(board, tuple(temp_pos)):
+            if util.position_is_enemy(board, tuple(temp_pos), enemies) or util.position_is_wood(board, tuple(temp_pos)):
+                return True
+            temp_pos = pos + d
+            r -= 1
+    return False
 
 
 class NewAgent(BaseAgent):
@@ -101,30 +121,41 @@ class NewAgent(BaseAgent):
         dangerous_bombs = get_bombs(board,pos, all_bombs_strength, bomb_life)
         adjacent_flames = get_flames(board,pos)
         quarter = get_quarter(pos)
-        enemy_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
+#        enemy_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
+        thing_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
         
 #        import IPython
 #        IPython.embed()
         state = (valid_directions, dangerous_bombs, adjacent_flames,
-                 can_kick, ammo, quarter, enemy_in_range)
+                 can_kick, ammo, quarter, thing_in_range)
         return state
             
     def set_start_state(self, obs):
         self.cur_state = self.extract_state(obs)
 
-    def update_q_value(self, reward):
-        if self.done:
-            return
-        if self.cur_state not in self.q_values:
-            self.q_values[self.cur_state] = [0] * 6
-        if self.last_state not in self.q_values:
-            self.q_values[self.last_state] = [0] * 6
-        best_next_action = np.argmax(self.q_values[self.cur_state])    
-        td_target = reward + self.discount * self.q_values[self.cur_state][best_next_action]
-        td_delta = td_target - self.q_values[self.last_state][self.last_action]
-        self.q_values[self.last_state][self.last_action] += self.alpha * td_delta
-        if reward != 0:
-            self.episode_end();
+    def update_q_value(self, reward, new_state = None, old_state = None, last_action=None):
+        if new_state == None or old_state == None or last_action==None:
+            if self.done:
+                return
+            if self.cur_state not in self.q_values:
+                self.q_values[self.cur_state] = [0] * 6
+            if self.last_state not in self.q_values:
+                self.q_values[self.last_state] = [0] * 6
+            best_next_action = np.argmax(self.q_values[self.cur_state])    
+            td_target = reward + self.discount * self.q_values[self.cur_state][best_next_action]
+            td_delta = td_target - self.q_values[self.last_state][self.last_action]
+            self.q_values[self.last_state][self.last_action] += self.alpha * td_delta
+            if reward != 0:
+                self.episode_end();
+        else:
+            if new_state not in self.q_values:
+                self.q_values[new_state] = [0] * 6
+            if old_state not in self.q_values:
+                self.q_values[old_state] = [0] * 6
+            best_next_action = np.argmax(self.q_values[new_state])    
+            td_target = reward + self.discount * self.q_values[new_state][best_next_action]
+            td_delta = td_target - self.q_values[old_state][last_action]
+            self.q_values[old_state][last_action] += self.alpha * td_delta
         
 
     def act(self, obs, action_space):
