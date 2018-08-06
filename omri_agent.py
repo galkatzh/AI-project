@@ -28,7 +28,7 @@ def get_bombs(board,pos, all_bombs_strength, bomb_life):
     for i,d in enumerate(np.array([[0,1],[0,-1],[1,0],[-1,0]])):
         temp_pos = pos + d
         bomb_range = 0
-        while util.position_on_board(board, temp_pos) and not util.position_is_fog(board, tuple(temp_pos)):
+        while util.position_on_board(board, tuple(temp_pos)) and not util.position_is_fog(board, tuple(temp_pos)) and not util.position_is_rigid(board, tuple(temp_pos)):
             bomb_range += 1
             if all_bombs_strength[tuple(temp_pos)] >= bomb_range:
                 dangers[i] = min(dangers[i], bomb_life[temp_pos[0],temp_pos[1]])
@@ -46,14 +46,21 @@ def get_flames(board,pos):
 def get_quarter(pos):
     r,c = pos
     quarters = [[1,2],[3,4]]
-    return quarters[r>5][c>5]
+    return quarters[r>=5][c>=5]
 
 def is_enemy_in_range(board, pos, blast_radius, enemies):
     for d in np.array([[0,1],[0,-1],[1,0],[-1,0]]):
-        for r in range(1,blast_radius+1):
-            temp_pos = tuple(pos + r*d)
-            if util.position_on_board(board, temp_pos) and util.position_is_enemy(board, temp_pos, enemies):
+        r = blast_radius
+        temp_pos = pos + d
+        while r > 0 and util.position_on_board(board, tuple(temp_pos)) and not util.position_is_rigid(board, tuple(temp_pos)):
+            if util.position_is_enemy(board, tuple(temp_pos), enemies):
                 return True
+            temp_pos = pos + d
+            r -= 1
+#        for r in range(1,blast_radius+1):
+#            temp_pos = tuple(pos + r*d)
+#            if :
+#                return True
     return False
     
 

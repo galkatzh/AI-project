@@ -5,6 +5,7 @@ from omri_agent import NewAgent
 DEBUG = False
 
 def main():
+    
     # Print all possible environments in the Pommerman registry
     print(pommerman.REGISTRY)
     
@@ -39,7 +40,7 @@ def main():
             if DEBUG and reward[-1] == 0:
                 env.render()
                 print(bla.cur_state)
-#                input()
+                input()
             
             #print(reward, done, info)
         print(bla.q_values)
