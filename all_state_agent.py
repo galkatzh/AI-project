@@ -12,7 +12,7 @@ import os.path
     # - check if enemies can escape
     # - use reward for killing other players
     
-filename = 'qvalues.npy'
+filename = 'full_qvalues.npy'
 dirs = [1,2,3,4]  #up, down, left, right    
 
 def flip_coin(p):
