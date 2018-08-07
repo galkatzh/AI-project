@@ -84,6 +84,17 @@ def is_thing_in_range(board, pos, blast_radius, enemies):
             r -= 1
     return False
 
+def powerup_in_range(board, pos):
+    powers = [False] * 4
+    inds = [[0,1],[2,3]]
+    for i in range(-2,3):
+        for j in range(-2,3):
+            temp_pos = (pos[0] + i, pos[0] + j)
+            if util.position_on_board(board, temp_pos) and util.position_is_powerup(board, temp_pos):
+                powers[inds[i>=0][j>=0]] = True
+    return tuple(powers)
+                
+
 
 class NewAgent(BaseAgent):
 
@@ -120,13 +131,17 @@ class NewAgent(BaseAgent):
         dangerous_bombs = get_bombs(board,pos, all_bombs_strength, bomb_life)
         adjacent_flames = get_flames(board,pos)
         quarter = get_quarter(pos)
-#        enemy_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
-        thing_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
+        enemy_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
+        wood_in_range = is_wood_in_range(board,pos, blast_radius)
+#        thing_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
+        stands_on_bomb = self.last_action == 5
+        powerups = powerup_in_range(board,pos)
         
 #        import IPython
 #        IPython.embed()
         state = (valid_directions, dangerous_bombs, adjacent_flames,
-                 can_kick, ammo, quarter, thing_in_range)
+                 can_kick, ammo, quarter, wood_in_range, enemy_in_range,
+                 stands_on_bomb, powerups)
         return state
             
     def set_start_state(self, obs):
