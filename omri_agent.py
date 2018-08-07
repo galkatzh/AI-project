@@ -92,6 +92,10 @@ def powerup_in_range(board, pos):
             temp_pos = (pos[0] + i, pos[0] + j)
             if util.position_on_board(board, temp_pos) and util.position_is_powerup(board, temp_pos):
                 powers[inds[i>=0][j>=0]] = True
+                if i==0:
+                    powers[inds[not i>=0][j>=0]] = True
+                if j==0:
+                    powers[inds[i>=0][not j>=0]] = True
     return tuple(powers)
                 
 
