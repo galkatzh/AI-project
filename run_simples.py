@@ -3,6 +3,7 @@ import pommerman
 from pommerman import agents
 import numpy as np
 from snorkel_agent import SnorkelAgent
+from random import randint
 
 def main():
     '''Simple function to bootstrap a game.
@@ -17,30 +18,42 @@ def main():
         agents.SimpleAgent(),
         agents.SimpleAgent(),
         agents.SimpleAgent(),
-        SnorkelAgent(),
+        agents.SimpleAgent()
         # agents.DockerAgent("pommerman/simple-agent", port=12345),
     ]
+    
+    
+    learner_index = randint(0,3)
+    print(learner_index)
+    agent_list[learner_index] = SnorkelAgent()
+    
     # Make the "Free-For-All" environment using the agent list
     env = pommerman.make('PommeFFACompetition-v0', agent_list)
-    d=[]
+    wins=np.zeros(4)
+    episodes = 10
+    
+    win_str='winners'
 
     # Run the episodes just like OpenAI Gym
-    for i_episode in range(10):
+    for i_episode in range(episodes):
         state = env.reset()
         done = False
-        while not done:
-#            env.render()
-            cur_obs = env.get_observations()
+        steps = 0
+        while not done and steps < 500:
+            steps += 1
+            env.render()
             actions = env.act(state)
-            for ob, act in zip(cur_obs, actions):
-                val = np.zeros(6)
-                val[act] = 1
-                d.append((ob,val))
                 
             state, reward, done, info = env.step(actions)
+            
+        if win_str in info.keys():
+            for w in info[win_str]:
+                if w==learner_index:
+                wins[w] += 1
         print('Episode {} finished'.format(i_episode))
     env.close()
-    np.savez_compressed('labels_foe_snorkel',d=d)
+    print('rates: ',wins/episodes)
+    print('Learner win rate: ',wins[learner_index]/episodes)
 
 
 if __name__ == '__main__':
