@@ -3,7 +3,7 @@ from pommerman import agents
 from all_state_agent import NewAgent
 from random import randint
 
-DEBUG = True
+DEBUG = False
 
 def main():
     

@@ -27,7 +27,7 @@ def main():
     print(learner_index)
     agent_list[learner_index] = bla
     # Make the "Free-For-All" environment using the agent list
-    env = pommerman.make('PommeFFACompetition-v0', agent_list)
+    env = pommerman.make('PommeTeamCompetition-v0', agent_list)
     reward = [0,0,0,0]
 
     # Run the episodes just like OpenAI Gym
