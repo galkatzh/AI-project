@@ -1,10 +1,8 @@
-'''An example to show how to set up an pommerman game programmatically'''
 import pommerman
 from pommerman import agents
 import numpy as np
 from heursitics import get_lf
 from snorkel.learning import GenerativeModel
-import pickle
 
 def main():
     '''Simple function to bootstrap a game.
@@ -27,7 +25,7 @@ def main():
     d=[]
 
     # Run the episodes just like OpenAI Gym
-    for i_episode in range(1):
+    for i_episode in range(300):
         state = env.reset()
         done = False
         while not done:
@@ -65,9 +63,6 @@ def main():
         gm.train(temp_l)
         gm.save(filename + str(i))
         
-    
-#    np.savez_compressed(filename,m=gms)
-#    pickle.dump(gms,filename)
 
 
 if __name__ == '__main__':

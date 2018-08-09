@@ -28,6 +28,4 @@ class SnorkelAgent(BaseAgent):
             tmp = sparse.csr_matrix(l[:,i])
             probs[i] = m.marginals(tmp)
         
-        return np.argmax(probs)
-            
-        
+        return np.random.choice(np.flatnonzero(probs == probs.max()))
