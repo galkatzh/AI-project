@@ -26,7 +26,8 @@ def main():
     
     learner_index = randint(0,3)
     print(learner_index)
-    agent_list[learner_index] = RandomForestAgent()
+#    agent_list[learner_index] = RandomForestAgent()
+    agent_list[learner_index] = SnorkelAgent()
     
     # Make the "Free-For-All" environment using the agent list
     env = pommerman.make('PommeFFACompetition-v0', agent_list)

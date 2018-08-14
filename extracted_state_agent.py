@@ -12,7 +12,7 @@ import os.path
     # - check if enemies can escape
     # - use reward for killing other players
     
-filename = 'qvalues.npz'
+filename = 'qvalues'
 dirs = [1,2,3,4]  #up, down, left, right    
 
 def flip_coin(p):
@@ -146,8 +146,16 @@ class ExtractedStateAgent(BaseAgent):
         if os.path.isfile(filename):
             self.q_values = np.load(filename)['q'].item()
             
+    def get_filename(self):
+        fn = "qvalues_"
+        fn += str(self.epsilon)
+        fn += "_"
+        fn += str(self.alpha)
+        fn += ".npz"
+        return fn
+            
     def save_qvalues(self):
-        np.savez_compressed(filename, q=self.q_values)
+        np.savez_compressed(self.get_filename(), q=self.q_values)
             
     def set_start_state(self, obs):
         self.cur_state = self.extract_state(obs)
