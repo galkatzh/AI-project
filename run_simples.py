@@ -3,6 +3,7 @@ import pommerman
 from pommerman import agents
 import numpy as np
 from snorkel_agent import SnorkelAgent
+from randoom_forest_agent import RandomForestAgent
 from random import randint
 
 def main():
@@ -25,7 +26,7 @@ def main():
     
     learner_index = randint(0,3)
     print(learner_index)
-    agent_list[learner_index] = SnorkelAgent()
+    agent_list[learner_index] = RandomForestAgent()
     
     # Make the "Free-For-All" environment using the agent list
     env = pommerman.make('PommeFFACompetition-v0', agent_list)
@@ -49,7 +50,7 @@ def main():
         if win_str in info.keys():
             for w in info[win_str]:
                 if w==learner_index:
-                wins[w] += 1
+                    wins[w] += 1
         print('Episode {} finished'.format(i_episode))
     env.close()
     print('rates: ',wins/episodes)

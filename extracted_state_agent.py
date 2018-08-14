@@ -97,29 +97,8 @@ def powerup_in_range(board, pos):
                 if j==0:
                     powers[inds[i>=0][not j>=0]] = True
     return tuple(powers)
-                
-
-
-class NewAgent(BaseAgent):
-
-    def __init__(self, *args, **kwargs):
-        super(NewAgent, self).__init__(*args, **kwargs)
-        self.last_action = 0
-        self.new_action = 0
-        self.cur_state = (0,)
-        self.last_state = (0,)
-        self.epsilon = 0.8
-        self.discount = 1
-        self.alpha = 1
-        self.done = False
-        self.q_values = dict()
-        if os.path.isfile(filename):
-            self.q_values = np.load(filename)['q'].item()
-            
-    def save_qvalues(self):
-        np.savez_compressed(filename, q=self.q_values)
-
-    def extract_state(self, obs):
+    
+def extract_state(obs):
 #        dirs = [1,2,3,4]  #up, down, left, right
         board = obs["board"]
         pos = np.array(obs["position"])
@@ -138,15 +117,34 @@ class NewAgent(BaseAgent):
         enemy_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
         wood_in_range = is_wood_in_range(board,pos, blast_radius)
 #        thing_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
-        stands_on_bomb = self.last_action == 5
         powerups = powerup_in_range(board,pos)
         
 #        import IPython
 #        IPython.embed()
         state = (valid_directions, dangerous_bombs, adjacent_flames,
                  can_kick, ammo, quarter, wood_in_range, enemy_in_range,
-                 stands_on_bomb, powerups)
+                 powerups)
         return state
+
+
+class ExtractedStateAgent(BaseAgent):
+
+    def __init__(self, *args, **kwargs):
+        super(ExtractedStateAgent, self).__init__(*args, **kwargs)
+        self.last_action = 0
+        self.new_action = 0
+        self.cur_state = (0,)
+        self.last_state = (0,)
+        self.epsilon = 0.8
+        self.discount = 1
+        self.alpha = 1
+        self.done = False
+        self.q_values = dict()
+        if os.path.isfile(filename):
+            self.q_values = np.load(filename)['q'].item()
+            
+    def save_qvalues(self):
+        np.savez_compressed(filename, q=self.q_values)
             
     def set_start_state(self, obs):
         self.cur_state = self.extract_state(obs)
@@ -175,6 +173,34 @@ class NewAgent(BaseAgent):
             td_delta = td_target - self.q_values[old_state][last_action]
             self.q_values[old_state][last_action] += self.alpha * td_delta
         
+        def extract_state(obs):
+#        dirs = [1,2,3,4]  #up, down, left, right
+            board = obs["board"]
+            pos = np.array(obs["position"])
+            bomb_life = obs["bomb_life"]
+            all_bombs_strength = obs["bomb_blast_strength"]
+            can_kick = obs['can_kick']
+            blast_radius = obs['blast_strength']
+            ammo = obs['ammo']
+            enemies = obs['enemies']
+    #        valid_directions = [util.is_valid_direction(board, pos, d) for d in dirs]
+            
+            valid_directions = get_valid_directions(board, pos)
+            dangerous_bombs = get_bombs(board,pos, all_bombs_strength, bomb_life)
+            adjacent_flames = get_flames(board,pos)
+            quarter = get_quarter(pos)
+            enemy_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
+            wood_in_range = is_wood_in_range(board,pos, blast_radius)
+    #        thing_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
+            stands_on_bomb = self.last_action == 5
+            powerups = powerup_in_range(board,pos)
+            
+    #        import IPython
+    #        IPython.embed()
+            state = (valid_directions, dangerous_bombs, adjacent_flames,
+                     can_kick, ammo, quarter, wood_in_range, enemy_in_range,
+                     stands_on_bomb, powerups)
+            return state
 
     def act(self, obs, action_space):
 #        import IPython
