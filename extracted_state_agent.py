@@ -151,6 +151,8 @@ class ExtractedStateAgent(BaseAgent):
         fn += str(self.epsilon)
         fn += "_"
         fn += str(self.alpha)
+        fn += "_"
+        fn += str(self.discount)
         fn += ".npz"
         return fn
             

@@ -8,13 +8,13 @@ DEBUG = False
 
 def main():
     
-    discount = 1;
-    if len(sys.argv) != 3:
-        alpha = 1
-        epsilon = 0.5
-    else:
+    discount = 1
+    alpha = 1
+    epsilon = 0.5
+    if len(sys.argv) == 4:
         epsilon = float(sys.argv[1])
         alpha = float(sys.argv[2])
+        discount = float(sys.argv[3])
     
     # Print all possible environments in the Pommerman registry
     print(pommerman.REGISTRY)
