@@ -129,15 +129,18 @@ def extract_state(obs):
 
 class ExtractedStateAgent(BaseAgent):
 
-    def __init__(self, *args, **kwargs):
-        super(ExtractedStateAgent, self).__init__(*args, **kwargs)
+    def __init__(self, discount, epsilon, alpha):
+        super(ExtractedStateAgent, self).__init__()
         self.last_action = 0
         self.new_action = 0
         self.cur_state = (0,)
         self.last_state = (0,)
-        self.epsilon = 0.8
-        self.discount = 1
-        self.alpha = 1
+#        self.epsilon = 0.8
+#        self.discount = 1
+#        self.alpha = 1
+        self.epsilon = epsilon
+        self.discount = discount
+        self.alpha = alpha
         self.done = False
         self.q_values = dict()
         if os.path.isfile(filename):
@@ -162,7 +165,7 @@ class ExtractedStateAgent(BaseAgent):
             td_delta = td_target - self.q_values[self.last_state][self.last_action]
             self.q_values[self.last_state][self.last_action] += self.alpha * td_delta
             if reward != 0:
-                self.episode_end();
+                self.episode_end(reward);
         else:
             if new_state not in self.q_values:
                 self.q_values[new_state] = [0] * 6
@@ -173,34 +176,34 @@ class ExtractedStateAgent(BaseAgent):
             td_delta = td_target - self.q_values[old_state][last_action]
             self.q_values[old_state][last_action] += self.alpha * td_delta
         
-        def extract_state(obs):
+    def extract_state(self, obs):
 #        dirs = [1,2,3,4]  #up, down, left, right
-            board = obs["board"]
-            pos = np.array(obs["position"])
-            bomb_life = obs["bomb_life"]
-            all_bombs_strength = obs["bomb_blast_strength"]
-            can_kick = obs['can_kick']
-            blast_radius = obs['blast_strength']
-            ammo = obs['ammo']
-            enemies = obs['enemies']
-    #        valid_directions = [util.is_valid_direction(board, pos, d) for d in dirs]
-            
-            valid_directions = get_valid_directions(board, pos)
-            dangerous_bombs = get_bombs(board,pos, all_bombs_strength, bomb_life)
-            adjacent_flames = get_flames(board,pos)
-            quarter = get_quarter(pos)
-            enemy_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
-            wood_in_range = is_wood_in_range(board,pos, blast_radius)
-    #        thing_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
-            stands_on_bomb = self.last_action == 5
-            powerups = powerup_in_range(board,pos)
-            
-    #        import IPython
-    #        IPython.embed()
-            state = (valid_directions, dangerous_bombs, adjacent_flames,
-                     can_kick, ammo, quarter, wood_in_range, enemy_in_range,
-                     stands_on_bomb, powerups)
-            return state
+        board = obs["board"]
+        pos = np.array(obs["position"])
+        bomb_life = obs["bomb_life"]
+        all_bombs_strength = obs["bomb_blast_strength"]
+        can_kick = obs['can_kick']
+        blast_radius = obs['blast_strength']
+        ammo = obs['ammo']
+        enemies = obs['enemies']
+#        valid_directions = [util.is_valid_direction(board, pos, d) for d in dirs]
+        
+        valid_directions = get_valid_directions(board, pos)
+        dangerous_bombs = get_bombs(board,pos, all_bombs_strength, bomb_life)
+        adjacent_flames = get_flames(board,pos)
+        quarter = get_quarter(pos)
+        enemy_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
+        wood_in_range = is_wood_in_range(board,pos, blast_radius)
+#        thing_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
+        stands_on_bomb = self.last_action == 5
+        powerups = powerup_in_range(board,pos)
+        
+#        import IPython
+#        IPython.embed()
+        state = (valid_directions, dangerous_bombs, adjacent_flames,
+                 can_kick, ammo, quarter, wood_in_range, enemy_in_range,
+                 stands_on_bomb, powerups)
+        return state
 
     def act(self, obs, action_space):
 #        import IPython
@@ -215,9 +218,10 @@ class ExtractedStateAgent(BaseAgent):
             self.new_action = action_space.sample()
         return self.new_action
 
-    def episode_end(self):
-        self.done = True
-        self.last_action = 0
-        self.new_action = 0
-        self.cur_state = (0,)
-        self.last_state = (0,)
+    def episode_end(self, reward):
+        if not self.done:
+            self.done = True
+            self.last_action = 0
+            self.new_action = 0
+            self.cur_state = (0,)
+            self.last_state = (0,)

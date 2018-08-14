@@ -30,15 +30,18 @@ def freeze(d):
 
 class NewAgent(BaseAgent):
 
-    def __init__(self, *args, **kwargs):
-        super(NewAgent, self).__init__(*args, **kwargs)
+    def __init__(self, discount, epsilon, alpha):
+        super(NewAgent, self).__init__()
         self.last_action = 0
         self.new_action = 0
         self.cur_state = (0,)
         self.last_state = (0,)
-        self.epsilon = 0.8
-        self.discount = 1
-        self.alpha = 1
+#        self.epsilon = 0.8
+#        self.discount = 1
+#        self.alpha = 1
+        self.epsilon = epsilon
+        self.discount = discount
+        self.alpha = alpha
         self.done = False
         self.q_values = dict()
         if os.path.isfile(filename):
@@ -67,7 +70,7 @@ class NewAgent(BaseAgent):
             td_delta = td_target - self.q_values[self.last_state][self.last_action]
             self.q_values[self.last_state][self.last_action] += self.alpha * td_delta
             if reward != 0:
-                self.episode_end();
+                self.episode_end(reward);
         else:
             if new_state not in self.q_values:
                 self.q_values[new_state] = [0] * 6
@@ -92,9 +95,10 @@ class NewAgent(BaseAgent):
             self.new_action = action_space.sample()
         return self.new_action
 
-    def episode_end(self):
-        self.done = True
-        self.last_action = 0
-        self.new_action = 0
-        self.cur_state = (0,)
-        self.last_state = (0,)
+    def episode_end(self, reward):
+        if not self.done:
+            self.done = True
+            self.last_action = 0
+            self.new_action = 0
+            self.cur_state = (0,)
+            self.last_state = (0,)

@@ -2,15 +2,24 @@ import pommerman
 from pommerman import agents
 from all_state_agent import NewAgent
 from random import randint
+import sys
 
 DEBUG = False
 
 def main():
     
+    discount = 1;
+    if len(sys.argv) != 3:
+        alpha = 1
+        epsilon = 1
+    else:
+        epsilon = float(sys.argv[1])
+        alpha = float(sys.argv[2])
+    
     # Print all possible environments in the Pommerman registry
     print(pommerman.REGISTRY)
     
-    bla = NewAgent()
+    bla = NewAgent(discount, epsilon, alpha)
 
     # Create a set of agents (exactly four)
     agent_list = [
