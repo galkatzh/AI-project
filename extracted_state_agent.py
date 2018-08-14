@@ -143,8 +143,8 @@ class ExtractedStateAgent(BaseAgent):
         self.alpha = alpha
         self.done = False
         self.q_values = dict()
-        if os.path.isfile(filename):
-            self.q_values = np.load(filename)['q'].item()
+        if os.path.isfile(self.get_filename()):
+            self.q_values = np.load(self.get_filename())['q'].item()
             
     def get_filename(self):
         fn = "qvalues_"

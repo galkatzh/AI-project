@@ -44,11 +44,19 @@ class NewAgent(BaseAgent):
         self.alpha = alpha
         self.done = False
         self.q_values = dict()
-        if os.path.isfile(filename):
-            self.q_values = np.load(filename)['q'].item()
+        if os.path.isfile(self.get_filename()):
+            self.q_values = np.load(self.get_filename())['q'].item()
             
     def save_qvalues(self):
         np.savez_compressed(filename, q=self.q_values)
+        
+    def get_filename(self):
+        fn = "full_qvalues_"
+        fn += str(self.epsilon)
+        fn += "_"
+        fn += str(self.alpha)
+        fn += ".npz"
+        return fn
 
     def extract_state(self, obs):
 #        dirs = [1,2,3,4]  #up, down, left, right
