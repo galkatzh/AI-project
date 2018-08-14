@@ -11,7 +11,7 @@ def main():
     discount = 1;
     if len(sys.argv) != 3:
         alpha = 1
-        epsilon = 1
+        epsilon = 0.5
     else:
         epsilon = float(sys.argv[1])
         alpha = float(sys.argv[2])
