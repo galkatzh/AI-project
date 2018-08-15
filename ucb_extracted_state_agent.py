@@ -5,9 +5,9 @@ import pommerman.utility as util
 import pommerman.constants as consts
 import os.path
 
-    
+
 filename = 'qvalues'
-dirs = [1,2,3,4]  #up, down, left, right    
+dirs = [1,2,3,4]  #up, down, left, right
 
 def flip_coin(p):
     r = random.random()
@@ -62,7 +62,7 @@ def is_wood_in_range(board, pos, blast_radius):
             temp_pos = pos + d
             r -= 1
     return False
-    
+
 def is_thing_in_range(board, pos, blast_radius, enemies):
     for d in np.array([[0,1],[0,-1],[1,0],[-1,0]]):
         r = blast_radius
@@ -87,7 +87,7 @@ def powerup_in_range(board, pos):
                 if j==0:
                     powers[inds[i>=0][not j>=0]] = True
     return tuple(powers)
-    
+
 def extract_state(obs):
         board = obs["board"]
         pos = np.array(obs["position"])
@@ -97,7 +97,7 @@ def extract_state(obs):
         blast_radius = obs['blast_strength']
         ammo = obs['ammo']
         enemies = obs['enemies']
-        
+
         valid_directions = get_valid_directions(board, pos)
         dangerous_bombs = get_bombs(board,pos, all_bombs_strength, bomb_life)
         adjacent_flames = get_flames(board,pos)
@@ -106,7 +106,7 @@ def extract_state(obs):
         wood_in_range = is_wood_in_range(board,pos, blast_radius)
 #        thing_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
         powerups = powerup_in_range(board,pos)
-        
+
         state = (valid_directions, dangerous_bombs, adjacent_flames,
                  can_kick, ammo, quarter, wood_in_range, enemy_in_range,
                  powerups)
@@ -115,7 +115,7 @@ def extract_state(obs):
 
 class ExtractedStateAgent(BaseAgent):
 
-    def __init__(self, name,discount, epsilon, alpha):
+    def __init__(self, name,discount, c, alpha):
         super(ExtractedStateAgent, self).__init__()
         self.name = name
         self.last_action = 0
@@ -125,29 +125,29 @@ class ExtractedStateAgent(BaseAgent):
 #        self.epsilon = 0.8
 #        self.discount = 1
 #        self.alpha = 1
-        self.epsilon = epsilon
+        self.c = c
         self.discount = discount
         self.alpha = alpha
         self.done = False
         self.q_values = dict()
         if os.path.isfile(self.get_filename()):
             self.q_values = np.load(self.get_filename())['q'].item()
-            
+
     def get_filename(self):
-        fn = "qvalues_"
+        fn = "UCBqvalues_"
         fn += self.name
         fn += "_"
-        fn += str(self.epsilon)
+        fn += str(self.c)
         fn += "_"
         fn += str(self.alpha)
         fn += "_"
         fn += str(self.discount)
         fn += ".npz"
         return fn
-            
+
     def save_qvalues(self):
         np.savez_compressed(self.get_filename(), q=self.q_values)
-            
+
     def set_start_state(self, obs):
         self.cur_state = self.extract_state(obs)
 
@@ -156,25 +156,26 @@ class ExtractedStateAgent(BaseAgent):
             if self.done:
                 return
             if self.cur_state not in self.q_values:
-                self.q_values[self.cur_state] = np.zeros(6)
+                self.q_values[self.cur_state] = [np.zeros(6), np.zeros(6)]
             if self.last_state not in self.q_values:
-                self.q_values[self.last_state] = np.zeros(6)
-            best_next_action = np.argmax(self.q_values[self.cur_state])    
-            td_target = reward + self.discount * self.q_values[self.cur_state][best_next_action]
-            td_delta = td_target - self.q_values[self.last_state][self.last_action]
-            self.q_values[self.last_state][self.last_action] += self.alpha * td_delta
+                self.q_values[self.last_state] = [np.zeros(6), np.zeros(6)]
+            best_next_action = np.argmax(self.q_values[self.cur_state][0])            
+            td_target = reward + self.discount * self.q_values[self.cur_state][0][best_next_action]
+            td_delta = td_target - self.q_values[self.last_state][0][self.last_action]
+            self.q_values[self.last_state][0][self.last_action] += self.alpha * td_delta
             if reward != 0:
                 self.episode_end(reward);
         else:
             if new_state not in self.q_values:
-                self.q_values[new_state] = np.zeros(6)
+                self.q_values[new_state] = [np.zeros(6), np.zeros(6)]
             if old_state not in self.q_values:
-                self.q_values[old_state] = np.zeros(6)
-            best_next_action = np.argmax(self.q_values[new_state])    
-            td_target = reward + self.discount * self.q_values[new_state][best_next_action]
-            td_delta = td_target - self.q_values[old_state][last_action]
-            self.q_values[old_state][last_action] += self.alpha * td_delta
-        
+                self.q_values[old_state] = [np.zeros(6), np.zeros(6)]
+            best_next_action = np.argmax(self.q_values[new_state][0])
+            td_target = reward + self.discount * self.q_values[new_state][0][best_next_action]
+            td_delta = td_target - self.q_values[old_state][0][last_action]
+            self.q_values[old_state][1][last_action] += 1
+            self.q_values[old_state][0][last_action] += self.alpha * td_delta
+
     def extract_state(self, obs):
 #        dirs = [1,2,3,4]  #up, down, left, right
         board = obs["board"]
@@ -186,7 +187,7 @@ class ExtractedStateAgent(BaseAgent):
         ammo = obs['ammo']
         enemies = obs['enemies']
 #        valid_directions = [util.is_valid_direction(board, pos, d) for d in dirs]
-        
+
         valid_directions = get_valid_directions(board, pos)
         dangerous_bombs = get_bombs(board,pos, all_bombs_strength, bomb_life)
         adjacent_flames = get_flames(board,pos)
@@ -196,26 +197,31 @@ class ExtractedStateAgent(BaseAgent):
 #        thing_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
         stands_on_bomb = self.last_action == 5
         powerups = powerup_in_range(board,pos)
-        
-#        import IPython
-#        IPython.embed()
+
         state = (valid_directions, dangerous_bombs, adjacent_flames,
                  can_kick, ammo, quarter, wood_in_range, enemy_in_range,
                  stands_on_bomb, powerups)
         return state
 
     def act(self, obs, action_space):
-#        import IPython
-#        IPython.embed()
         self.done = False
         self.last_action = self.new_action
         self.last_state = self.cur_state
         self.cur_state = self.extract_state(obs)
-        if self.cur_state in self.q_values and flip_coin(self.epsilon):
-            actions_q = np.array(self.q_values[self.cur_state])
-            self.new_action = np.random.choice(np.flatnonzero(actions_q == actions_q.max()))
+
+        if self.cur_state in self.q_values:
+            if 0 in self.q_values[self.cur_state][1]: # if an action was never chosen, choose it
+                actions_num = self.q_values[self.cur_state][1]
+                self.new_action = np.random.choice(np.flatnonzero(actions_num == 0))
+            else:
+                conf = np.log(self.q_values[self.cur_state][1].sum()) / self.q_values[self.cur_state][1]
+                bonus = self.c * np.sqrt(conf)
+                self.new_action = np.argmax(self.q_values[self.cur_state][0] + bonus)
         else:
             self.new_action = action_space.sample()
+            self.q_values[self.cur_state] = [np.zeros(6), np.zeros(6)]
+
+        self.q_values[self.cur_state][1][self.new_action] += 1
         return self.new_action
 
     def episode_end(self, reward):

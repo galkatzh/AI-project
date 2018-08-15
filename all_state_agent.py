@@ -65,9 +65,9 @@ class NewAgent(BaseAgent):
             if self.done:
                 return
             if self.cur_state not in self.q_values:
-                self.q_values[self.cur_state] = [0] * 6
+                self.q_values[self.cur_state] = np.zeros(6)
             if self.last_state not in self.q_values:
-                self.q_values[self.last_state] = [0] * 6
+                self.q_values[self.last_state] = np.zeros(6)
             best_next_action = np.argmax(self.q_values[self.cur_state])    
             td_target = reward + self.discount * self.q_values[self.cur_state][best_next_action]
             td_delta = td_target - self.q_values[self.last_state][self.last_action]
@@ -76,9 +76,9 @@ class NewAgent(BaseAgent):
                 self.episode_end(reward);
         else:
             if new_state not in self.q_values:
-                self.q_values[new_state] = [0] * 6
+                self.q_values[new_state] = np.zeros(6)
             if old_state not in self.q_values:
-                self.q_values[old_state] = [0] * 6
+                self.q_values[old_state] = np.zeros(6)
             best_next_action = np.argmax(self.q_values[new_state])    
             td_target = reward + self.discount * self.q_values[new_state][best_next_action]
             td_delta = td_target - self.q_values[old_state][last_action]
@@ -92,8 +92,9 @@ class NewAgent(BaseAgent):
         self.last_action = self.new_action
         self.last_state = self.cur_state
         self.cur_state = self.extract_state(obs)
-        if self.extract_state(obs) in self.q_values and flip_coin(self.epsilon):
-            self.new_action = np.argmax(self.q_values[self.extract_state(obs)])
+        if self.cur_state in self.q_values and flip_coin(self.epsilon):
+            actions_q = np.array(self.q_values[self.cur_state])
+            self.new_action = np.random.choice(np.flatnonzero(actions_q == actions_q.max()))
         else:
             self.new_action = action_space.sample()
         return self.new_action
