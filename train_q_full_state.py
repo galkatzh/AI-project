@@ -15,11 +15,14 @@ def main():
         epsilon = float(sys.argv[1])
         alpha = float(sys.argv[2])
         discount = float(sys.argv[3])
+    elif len(sys.argv) == 3:
+        epsilon = float(sys.argv[1])
+        alpha = float(sys.argv[2])
     
     # Print all possible environments in the Pommerman registry
     print(pommerman.REGISTRY)
     
-    bla = NewAgent(discount, epsilon, alpha)
+    bla = NewAgent('full', discount, epsilon, alpha)
 
     # Create a set of agents (exactly four)
     agent_list = [

@@ -1,18 +1,8 @@
 from pommerman.agents import BaseAgent
 import numpy as np
 import random
-import pommerman.utility as util
-import pommerman.constants as consts
 import os.path
 
-
-#TODO:
-    # -  make sure shown state is cur_state
-    # - where powerup
-    # - check if enemies can escape
-    # - use reward for killing other players
-    
-filename = 'full_qvalues.npz'
 dirs = [1,2,3,4]  #up, down, left, right    
 
 def flip_coin(p):
@@ -30,8 +20,9 @@ def freeze(d):
 
 class NewAgent(BaseAgent):
 
-    def __init__(self, discount, epsilon, alpha):
+    def __init__(self, name, discount, epsilon, alpha):
         super(NewAgent, self).__init__()
+        self.name = name
         self.last_action = 0
         self.new_action = 0
         self.cur_state = (0,)
@@ -48,10 +39,12 @@ class NewAgent(BaseAgent):
             self.q_values = np.load(self.get_filename())['q'].item()
             
     def save_qvalues(self):
-        np.savez_compressed(filename, q=self.q_values)
+        np.savez_compressed(self.get_filename(), q=self.q_values)
         
     def get_filename(self):
-        fn = "full_qvalues_"
+        fn = "qvalues_"
+        fn += self.name
+        fn += "_"
         fn += str(self.epsilon)
         fn += "_"
         fn += str(self.alpha)

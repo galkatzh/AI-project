@@ -5,12 +5,6 @@ import pommerman.utility as util
 import pommerman.constants as consts
 import os.path
 
-
-#TODO:
-    # -  make sure shown state is cur_state
-    # - where powerup
-    # - check if enemies can escape
-    # - use reward for killing other players
     
 filename = 'qvalues'
 dirs = [1,2,3,4]  #up, down, left, right    
@@ -56,10 +50,6 @@ def is_enemy_in_range(board, pos, blast_radius, enemies):
                 return True
             temp_pos = pos + d
             r -= 1
-#        for r in range(1,blast_radius+1):
-#            temp_pos = tuple(pos + r*d)
-#            if :
-#                return True
     return False
 
 def is_wood_in_range(board, pos, blast_radius):
@@ -99,7 +89,6 @@ def powerup_in_range(board, pos):
     return tuple(powers)
     
 def extract_state(obs):
-#        dirs = [1,2,3,4]  #up, down, left, right
         board = obs["board"]
         pos = np.array(obs["position"])
         bomb_life = obs["bomb_life"]
@@ -108,7 +97,6 @@ def extract_state(obs):
         blast_radius = obs['blast_strength']
         ammo = obs['ammo']
         enemies = obs['enemies']
-#        valid_directions = [util.is_valid_direction(board, pos, d) for d in dirs]
         
         valid_directions = get_valid_directions(board, pos)
         dangerous_bombs = get_bombs(board,pos, all_bombs_strength, bomb_life)
@@ -119,8 +107,6 @@ def extract_state(obs):
 #        thing_in_range = is_enemy_in_range(board,pos, blast_radius, enemies)
         powerups = powerup_in_range(board,pos)
         
-#        import IPython
-#        IPython.embed()
         state = (valid_directions, dangerous_bombs, adjacent_flames,
                  can_kick, ammo, quarter, wood_in_range, enemy_in_range,
                  powerups)
@@ -129,8 +115,9 @@ def extract_state(obs):
 
 class ExtractedStateAgent(BaseAgent):
 
-    def __init__(self, discount, epsilon, alpha):
+    def __init__(self, name,discount, epsilon, alpha):
         super(ExtractedStateAgent, self).__init__()
+        self.name = name
         self.last_action = 0
         self.new_action = 0
         self.cur_state = (0,)
@@ -148,6 +135,8 @@ class ExtractedStateAgent(BaseAgent):
             
     def get_filename(self):
         fn = "qvalues_"
+        fn += self.name
+        fn += "_"
         fn += str(self.epsilon)
         fn += "_"
         fn += str(self.alpha)
