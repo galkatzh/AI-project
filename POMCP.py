@@ -13,7 +13,7 @@ EPSILON = 1e-10
 
 NUM_AGENTS = 4
 
-NUM_EPISODES = 400
+NUM_EPISODES = 4
 NUM_RUNNERS = 4
 NUM_ITERS = 100
 
@@ -54,6 +54,24 @@ class POMCPNode(object):
 
 
 class POMCPAgent(BaseAgent):
+    def generate_particles(self, history, num_particles):
+        prev_state = self.env.get_json_info()
+        particles = []
+        str_init_history = str(history[:-2])
+        while len(particles) < num_particles:
+            si = random_choice(self.tree[str_init_history].particles)
+            self.env._init_game_state = si
+            obs = self.env.reset()
+            actions = self.env.act(obs)
+            action = history[-2]
+            actions.insert((self.agent_id, action))
+            sj, oj, r, cost = self.env.step(actions)
+
+            if oj == obs:
+                particles.append(sj)
+        #TODO: add invigoration
+        return particles
+
     def act(self, obs, action_space):
         state_str = str(obs[self.agent_id])
         if state_str in self.tree:
@@ -85,7 +103,13 @@ class POMCPAgent(BaseAgent):
                 self.env._init_game_state = None
                 state = self.env.get_json_info()
             else:
-                #TODO: make sure there are enough particles
+                #TODO: make sure there are enough particles. see: pyPOMDP pomcp.update_belief
+                ### BEGIN ATTEMPT ###
+                if str_history not in self.tree:
+                    self.tree[str_history] = POMCPNode()
+                    self.tree[str_history].particles.extend(self.generate_particles(history))
+                ###
+
                 state = random_choice(self.tree[str_history].particles)
 
             self.simulate(state, history, 0)
@@ -157,55 +181,64 @@ def runner(id, num_episodes, fifo, _args):
 
     for i in range (NUM_AGENTS):
         if i == agent_id:
-            agent_list.append(agent)
+            agent_list.append(SimpleAgent())
         else:
             agent_list.append(SimpleAgent())
 
     for j in range(num_episodes):
-        env = pommerman.make('TeamCompetition-v0', agent_list)
+        print(agent_list)
+        env = pommerman.make('PommeTeamCompetition-v0', agent_list)
+        env.set_training_agent(agent_id)
         step = 0
         # Run the episodes just like OpenAI Gym
         sum_rewards = 0
         state = env.reset()
         done = False
         start_time = time.time()
+        print(state)
+        history = [env.get_observations()[agent_id]]
         while not done:
             # env.render()
             actions = env.act(state)
+            action = agent.search(history)
+            actions.insert((agent_id, action))
             state, step_reward, done, info = env.step(actions)
-            sum_rewards += step_reward
+
+            history.extend([action,env.get_observations()[agent_id]])
+
+            sum_rewards += step_reward[agent_id]
             step += 1
         elapsed = time.time() - start_time
         env.close()
-        fifo.put((step, sum_rewards, agent_id, elapsed))
+        # fifo.put((step, sum_rewards, agent_id, elapsed))
 
 
 if __name__ == "__main__":
-
-    assert NUM_EPISODES % NUM_RUNNERS == 0, "The number of episodes should be divisible by number of runners"
-
-    # use spawn method for starting subprocesses
-    ctx = multiprocessing.get_context('spawn')
-
-    # create fifos and processes for all runners
-    fifo = ctx.Queue()
-    for i in range(NUM_RUNNERS):
-        process = ctx.Process(target = runner, args=(i, NUM_EPISODES // NUM_RUNNERS, fifo, None))
-        process.start()
-
-    # do logging in the main process
-    all_rewards = []
-    all_lengths = []
-    all_elapsed = []
-    for i in range(NUM_EPISODES):
-        # wait for a new trajectory
-        length, rewards, agent_id, elapsed = fifo.get()
-
-        print("Episode:", i, "Length:", length, "Rewards:", rewards, "Agent:", agent_id, "Time per step:", elapsed / length)
-        all_rewards.append(rewards)
-        all_lengths.append(length)
-        all_elapsed.append(elapsed)
-
-    print("Average reward:", np.mean(all_rewards))
-    print("Average length:", np.mean(all_lengths))
-    print("Time per timestep:", np.sum(all_elapsed) / np.sum(all_lengths))
+    runner(0, 1, None, None)
+    # assert NUM_EPISODES % NUM_RUNNERS == 0, "The number of episodes should be divisible by number of runners"
+    #
+    # # use spawn method for starting subprocesses
+    # ctx = multiprocessing.get_context('spawn')
+    #
+    # # create fifos and processes for all runners
+    # fifo = ctx.Queue()
+    # for i in range(NUM_RUNNERS):
+    #     process = ctx.Process(target = runner, args=(i, NUM_EPISODES // NUM_RUNNERS, fifo, None))
+    #     process.start()
+    #
+    # # do logging in the main process
+    # all_rewards = []
+    # all_lengths = []
+    # all_elapsed = []
+    # for i in range(NUM_EPISODES):
+    #     # wait for a new trajectory
+    #     length, rewards, agent_id, elapsed = fifo.get()
+    #
+    #     print("Episode:", i, "Length:", length, "Rewards:", rewards, "Agent:", agent_id, "Time per step:", elapsed / length)
+    #     all_rewards.append(rewards)
+    #     all_lengths.append(length)
+    #     all_elapsed.append(elapsed)
+    #
+    # print("Average reward:", np.mean(all_rewards))
+    # print("Average length:", np.mean(all_lengths))
+    # print("Time per timestep:", np.sum(all_elapsed) / np.sum(all_lengths))
