@@ -18,7 +18,7 @@ def main():
 
     discount = 1
     alpha = 1
-    epsilon = 0.5
+    epsilon = 0.1
     if len(sys.argv) == 4:
         epsilon = float(sys.argv[1])
         alpha = float(sys.argv[2])
@@ -26,7 +26,7 @@ def main():
     elif len(sys.argv) == 3:
         epsilon = float(sys.argv[1])
         alpha = float(sys.argv[2])
-        
+
     bla = ExtractedStateAgent("backplay", discount, epsilon, alpha)
 
     # Create a set of agents (exactly four)

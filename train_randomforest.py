@@ -51,12 +51,12 @@ def main():
         # agents.DockerAgent("pommerman/simple-agent", port=12345),
     ]
     # Make the "Free-For-All" environment using the agent list
-    env = pommerman.make('PommeTeamCompetition-v0', agent_list)
+    env = pommerman.make('PommeFFACompetition-v0', agent_list)
     gms = load_snorkel()
     # Run the episodes just like OpenAI Gym
     train_states = []
     train_labels = []
-    for i_episode in range(450):
+    for i_episode in range(100):
         state = env.reset()
         done = False
         while not done:
