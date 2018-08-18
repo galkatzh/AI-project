@@ -56,7 +56,7 @@ def main():
     # Run the episodes just like OpenAI Gym
     train_states = []
     train_labels = []
-    for i_episode in range(100):
+    for i_episode in range(1500):
         state = env.reset()
         done = False
         while not done:
