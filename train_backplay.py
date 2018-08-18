@@ -49,7 +49,7 @@ def main():
 
     # Run the episodes just like OpenAI Gym
     for i_episode in range(50):
-        learning_dicts = []
+        # learning_dicts = []
         game_snapshots = []
 
 
@@ -68,8 +68,8 @@ def main():
 
             last_obs = cur_obs
             cur_obs = env.get_observations()
-            learning_dicts.append([{'reward': reward[i], 'new_state': bla.extract_state(cur_obs[i]),
-                                        'old_state': bla.extract_state(last_obs[i]), 'last_action':actions[i]} for i in range(4)])
+            # learning_dicts.append([{'reward': reward[i], 'new_state': bla.extract_state(cur_obs[i]),
+            #                             'old_state': bla.extract_state(last_obs[i]), 'last_action':actions[i]} for i in range(4)])
 
             #bla.update_q_value(reward[learner_index])
 
@@ -80,14 +80,19 @@ def main():
 
             #print(reward, done, info)
             #        print(bla.q_values)
-        learning_dicts = learning_dicts[::-1]
+        # learning_dicts = learning_dicts[::-1]
         T = len(game_snapshots)
         j = 0
         k = WINDOW_SIZE
-        while T-k < len(game_snapshots) and T-j < len(game_snapshots) - WINDOW_SIZE:
-            with open('game_state.json', 'w') as outfile:
-                json.dump(np.random.choice(game_snapshots[T-j:min([len(game_snapshots)-1,T-k])]), outfile)
-            env.set_init_game_state('game_state.json')
+        #print(T - k, len(game_snapshots), T-j, len(game_snapshots) - WINDOW_SIZE)
+        while T-j > 0:# and T-j < len(game_snapshots) - WINDOW_SIZE
+            print(T-k,len(game_snapshots) - WINDOW_SIZE)
+            # with open('game_state.json', 'w') as outfile:
+            #     json.dump(np.random.choice(game_snapshots[T-j:min([len(game_snapshots)-1,T-k])]), outfile)
+            # env.set_init_game_state('game_state.json')
+            state_list = game_snapshots[max([0,T-k]):T-j]
+            #print(len(state_list))
+            env._init_game_state = state_list[np.random.choice(len(state_list))]
             env.set_json_info()
             cur_obs = env.get_observations()
             bla.set_start_state(cur_obs[learner_index])
@@ -97,6 +102,8 @@ def main():
                 state, reward, done, info = env.step(actions)
                 last_obs = cur_obs
                 cur_obs = env.get_observations()
+                #env.render()
+
                 for i in range(4):
                     bla.update_q_value(reward[i],new_state = bla.extract_state(cur_obs[i]),
                                         old_state = bla.extract_state(last_obs[i]), last_action=actions[i])
