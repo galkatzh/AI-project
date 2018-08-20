@@ -17,6 +17,8 @@ NUM_EPISODES = 4
 NUM_RUNNERS = 4
 NUM_ITERS = 100
 
+N_PARTICLES = 4
+
 """
 POMME questions:
 Do we save the qvalues every time?
@@ -55,6 +57,7 @@ class POMCPNode(object):
 
 class POMCPAgent(BaseAgent):
     def generate_particles(self, history, num_particles):
+        self.env.reset()
         prev_state = self.env.get_json_info()
         particles = []
         str_init_history = str(history[:-2])
@@ -107,7 +110,7 @@ class POMCPAgent(BaseAgent):
                 ### BEGIN ATTEMPT ###
                 if str_history not in self.tree:
                     self.tree[str_history] = POMCPNode()
-                    self.tree[str_history].particles.extend(self.generate_particles(history))
+                    self.tree[str_history].particles.extend(self.generate_particles(history, N_PARTICLES))
                 ###
 
                 state = random_choice(self.tree[str_history].particles)
