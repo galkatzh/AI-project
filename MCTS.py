@@ -68,12 +68,15 @@ class MCTSAgent(BaseAgent):
             print("we randomming")
             np.random.choice(action_space)
 
-    def __init__(self, agent_id):
-        super().__init__()
-        self.agent_id = agent_id
+    def __init__(self, *args, **kwargs):
+        super(MCTSAgent, self).__init__(*args, **kwargs)
+        self.agent_id = -1
         self.env = self.make_env()
         self.policy_fcn = lambda x: np.random.choice(6)
         self.tree = {}
+
+    def set_agent_id(self, agent_id):
+        self.agent_id=agent_id
 
     def make_env(self):
         agents = []
@@ -149,18 +152,18 @@ class MCTSAgent(BaseAgent):
 def runner(id, num_episodes, fifo, _args):
     # make sure agents play at all positions
     agent_id = id % NUM_AGENTS
-    agent = MCTSAgent(agent_id=agent_id)
     agent_list = []
-
+    agent = MCTSAgent()
     for i in range (NUM_AGENTS):
         if i == agent_id:
-            agent_list.append(SimpleAgent())
+            agent.set_agent_id(agent_id)
+            agent_list.append(agent)
         else:
             agent_list.append(SimpleAgent())
 
     for j in range(num_episodes):
         print(agent_list)
-        env = pommerman.make('PommeTeamCompetition-v0', agent_list)
+        env = pommerman.make('PommeFFACompetition-v0', agent_list)
         env.set_training_agent(agent_id)
         step = 0
         # Run the episodes just like OpenAI Gym
