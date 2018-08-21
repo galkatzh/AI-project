@@ -152,16 +152,17 @@ class MCTSAgent(BaseAgent):
 def runner(id, num_episodes, fifo, _args):
     # make sure agents play at all positions
     agent_id = id % NUM_AGENTS
-    agent_list = []
-    agent = MCTSAgent()
-    for i in range (NUM_AGENTS):
-        if i == agent_id:
-            agent.set_agent_id(agent_id)
-            agent_list.append(agent)
-        else:
-            agent_list.append(SimpleAgent())
+
 
     for j in range(num_episodes):
+        agent_list = []
+        agent = MCTSAgent()
+        for i in range(NUM_AGENTS):
+            if i == agent_id:
+                agent.set_agent_id(agent_id)
+                agent_list.append(agent)
+            else:
+                agent_list.append(SimpleAgent())
         print(agent_list)
         env = pommerman.make('PommeFFACompetition-v0', agent_list)
         env.set_training_agent(agent_id)
