@@ -12,8 +12,8 @@ GAMMA = 0.1
 EPSILON = 1e-10
 NUM_AGENTS = 4
 
-NUM_EPISODES = 4
-NUM_RUNNERS = 4
+NUM_EPISODES = 128
+NUM_RUNNERS = 8
 
 def simulate_action(env, my_action, my_agents_id):
     actions = env.act(env.get_observations())
