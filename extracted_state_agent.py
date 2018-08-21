@@ -1,3 +1,4 @@
+from pommerman import characters
 from pommerman.agents import BaseAgent
 import numpy as np
 import random
@@ -115,8 +116,8 @@ def extract_state(obs):
 
 class ExtractedStateAgent(BaseAgent):
 
-    def __init__(self, name,discount, epsilon, alpha):
-        super(ExtractedStateAgent, self).__init__()
+    def __init__(self, name,discount, epsilon, alpha, character=characters.Bomber):
+        super(ExtractedStateAgent, self).__init__(character)
         self.name = name
         self.last_action = 0
         self.new_action = 0

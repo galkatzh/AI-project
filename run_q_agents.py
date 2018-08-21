@@ -14,10 +14,12 @@ def run_games(param_dict1, param_dict2):
     wins = np.zeros(2)
     win_str='winners'
     episodes = 25
-    agent_list = [ExtractedStateAgent(**param_dict1), ExtractedStateAgent(**param_dict2), ExtractedStateAgent(**param_dict1), ExtractedStateAgent(**param_dict2)]
-    for agent in agent_list:
-        agent.epsilon = 0
+
     for i_episode in range(episodes):
+        agent_list = [ExtractedStateAgent(**param_dict1), ExtractedStateAgent(**param_dict2),
+                      ExtractedStateAgent(**param_dict1), ExtractedStateAgent(**param_dict2)]
+        for agent in agent_list:
+            agent.epsilon = 0
         # Make the "Free-For-All" environment using the agent list
         env = pommerman.make('PommeTeamCompetition-v0', agent_list)
         state = env.reset()
