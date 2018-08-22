@@ -55,8 +55,8 @@ def run_games(agent_construct_list):
     return wins
 
 
-q_params = dict()
-ucb_params = dict()
+q_params = {'epsilon': 0.2, 'discount': 0.9, 'alpha': 0.1}
+ucb_params = {'c': 1, 'discount': 0.9, 'alpha': 0.1}
 
 def get_backplay():
     return ExtractedStateAgent(name = "backplay", **q_params)
