@@ -22,15 +22,26 @@ def run_games(agent_construct_list):
         agent_list = [agent_construct_list[i]() for i in range(len(agent_construct_list))]
         for agent in agent_list:
             agent.epsilon = 0
+        for agent_index in range(len(agent_list)):
+            if isinstance(agent_list[agent_index], MCTSAgent):
+                agent_list[agent_index].set_agent_id(agent_index)
         # Make the "Free-For-All" environment using the agent list
         env = pommerman.make('PommeFFACompetition-v0', agent_list)
-        state = env.reset()
+        obs = env.reset()
+        state = env.get_json_info()
+        for agent_index in range(len(agent_list)):
+            if isinstance(agent_list[agent_index], MCTSAgent):
+                agent_list[agent_index].set_state(state)
         done = False
         steps = 0
         while not done and steps < 800:
             steps += 1
-            actions = env.act(state)
-            state, reward, done, info = env.step(actions)
+            actions = env.act(obs)
+            obs, reward, done, info = env.step(actions)
+            state = env.get_json_info()
+            for agent_index in range(len(agent_list)):
+                if isinstance(agent_list[agent_index], MCTSAgent):
+                    agent_list[agent_index].set_state(state)
             if DEBUG:
                 env.render()
         if win_str in info.keys():
