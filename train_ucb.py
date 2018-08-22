@@ -1,6 +1,6 @@
 import pommerman
 from pommerman import agents
-from ucb_extracted_state_agent import ExtractedStateAgent
+from ucb_extracted_state_agent import UCBExtractedStateAgent
 from random import randint
 import sys
 
@@ -22,7 +22,7 @@ def main():
     # Print all possible environments in the Pommerman registry
     print(pommerman.REGISTRY)
     
-    bla = ExtractedStateAgent('extract', discount, c, alpha)
+    bla = UCBExtractedStateAgent('extract', discount, c, alpha)
 
     # Create a set of agents (exactly four)
     agent_list = [
