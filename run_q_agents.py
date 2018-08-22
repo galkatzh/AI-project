@@ -13,7 +13,7 @@ discount_list = [0.8, 0.9, 0.99, 0.999]
 def run_games(param_dict1, param_dict2):
     wins = np.zeros(2)
     win_str='winners'
-    episodes = 25
+    episodes = 12
 
     for i_episode in range(episodes):
         agent_list = [ExtractedStateAgent(**param_dict1), ExtractedStateAgent(**param_dict2),
