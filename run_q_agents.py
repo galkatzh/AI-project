@@ -55,8 +55,8 @@ def all_pairs(param_list, key, param_dict):
                 curr_wins = run_games(all_params[i], all_params[j])
                 all_wins[i] += curr_wins[0]
                 all_wins[j] += curr_wins[1]
-                all_games[i] = curr_wins[0] + curr_wins[1]
-                all_games[j] = curr_wins[0] + curr_wins[1]
+                all_games[i] += curr_wins[0] + curr_wins[1]
+                all_games[j] += curr_wins[0] + curr_wins[1]
     return all_wins/all_games
 
 
