@@ -1,0 +1,1165 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass IEEEtran
+\begin_preamble
+\date{}
+\usepackage{fullpage}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement h
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Pommerman Agent
+\end_layout
+
+\begin_layout Author
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features tabularvalignment="middle">
+<column alignment="right" valignment="top">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="right" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Omri Ben Dov
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meirav Segal
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="right" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Gal Katzhendler
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Varda Zilberman
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+About the game
+\end_layout
+
+\begin_layout Standard
+In the original bomberman game, 4 players each control a virtual character.
+ Each character can go in 4 direction and drop a bomb.
+ After a few moments the bomb goes off and any character standing vertically
+ or horizontally in the blast radius (shown in fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Bomb-explosion"
+
+\end_inset
+
+) loses.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename graphs/before_bomb.png
+	width 20text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Before
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\lang british
+
+\begin_inset space \hspace{}
+\length 0cm
+\end_inset
+
+
+\lang english
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename graphs/after_bomb.png
+	width 20text%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+After
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Bomb-explosion"
+
+\end_inset
+
+Bomb explosion
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The winner of the game is the last player standing.
+ If the last agents die at the same time, it is a tie.
+\end_layout
+
+\begin_layout Standard
+At the beginning of the game, each player can only drop one bomb.
+ The ammo is renewed after the bomb explodes.
+\end_layout
+
+\begin_layout Standard
+The version of the game we chose to solve is called Pommerman
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-1"
+
+\end_inset
+
+.
+ Pommerman is an internet competition between AI agents sponsored by NIPS,
+ Google AI, Facebook AI Research and more.
+\end_layout
+
+\begin_layout Subsection
+Differences from original Bomberman
+\end_layout
+
+\begin_layout Standard
+In this variant of the game, the game board is made of 
+\begin_inset Formula $11\times11$
+\end_inset
+
+ tiles.
+ As the game starts, each player is place in a difference corner fo the
+ board.
+\end_layout
+
+\begin_layout Standard
+There are also a few differences from the original Bomberman:
+\end_layout
+
+\begin_layout Itemize
+There are 2 type of walls:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Rigid walls: Agents and flames can't go through.
+ Can't be blown by a bomb.
+\end_layout
+
+\begin_layout Itemize
+Wood walls: Agents and flames can't go through.
+ Can be blown by a bomb, and when blown has a chance to produce a pickable
+ powerup.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Powerups can be picked by the agent who reaches them first and can either:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Increase the blast radius of the agent's bomb.
+\end_layout
+
+\begin_layout Itemize
+Increase the available ammo of the agent.
+\end_layout
+
+\begin_layout Itemize
+Give the ability to kick bombs.
+ With this ability, an agent can move a bomb it runs into.
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Game-representation"
+
+\end_inset
+
+Game representation
+\end_layout
+
+\begin_layout Standard
+At each turn, the agent gets a list of observables from the game in order
+ to decide how to act.
+ The observables are:
+\end_layout
+
+\begin_layout Itemize
+The board itself (location of each element, if visible).
+\end_layout
+
+\begin_layout Itemize
+The position of the agent.
+\end_layout
+
+\begin_layout Itemize
+Agent's remaining ammo.
+\end_layout
+
+\begin_layout Itemize
+Agent's blast radius.
+\end_layout
+
+\begin_layout Itemize
+Can the agent kick bombs.
+\end_layout
+
+\begin_layout Itemize
+Who are the agent's teammates and enemies.
+\end_layout
+
+\begin_layout Itemize
+The strength and time to explosion of each bomb on the boards.
+\end_layout
+
+\begin_layout Standard
+In our project we relaxed the problem by ignoring the existence of teams.
+\end_layout
+
+\begin_layout Section
+Agents
+\end_layout
+
+\begin_layout Subsection
+Q-learning
+\end_layout
+
+\begin_layout Standard
+We first tried using reinforcement learning.
+ The state of the board at each turn is made of vectors and matrices of
+ a constant size.
+ Consequently, this game can be represented as an MDP:
+\end_layout
+
+\begin_layout Itemize
+The states are the game's states.
+\end_layout
+
+\begin_layout Itemize
+The actions are the possible actions for each player.
+\end_layout
+
+\begin_layout Itemize
+The rewards are given by the game: 
+\begin_inset Formula $1$
+\end_inset
+
+ if won, 
+\begin_inset Formula $-1$
+\end_inset
+
+ if lost, 
+\begin_inset Formula $0$
+\end_inset
+
+ if still playing.
+\end_layout
+
+\begin_layout Standard
+Each action can lead to many states with different probabilities as a result
+ of the game being multi-agent, since we can't control the other agents.
+\end_layout
+
+\begin_layout Standard
+As the game can easily be translated to MDP, we could simply implement a
+ Q-learning agent.
+\end_layout
+
+\begin_layout Standard
+For the learning process, we played many games with the learning agent against
+ 3 simple deterministic agents (designed and implemented by the Pommerman
+ team).
+\end_layout
+
+\begin_layout Standard
+The learning agent is initialized with some model parameters 
+\begin_inset Formula $\alpha,\gamma$
+\end_inset
+
+ (learning, discount respectively) and would choose an action accordingly.
+ After every turn a reward is given by the game and the agent would update
+ its q-values according to this reward (
+\begin_inset Formula $r$
+\end_inset
+
+).
+ The update is made by:
+\begin_inset Formula 
+\[
+Q\left(s,a\right)\leftarrow\left(1-\alpha\right)Q\left(s,a\right)+\alpha\left(r+\gamma\max_{a^{\prime}}Q\left(s^{\prime},a^{\prime}\right)\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $s$
+\end_inset
+
+ is the previous state, 
+\begin_inset Formula $a$
+\end_inset
+
+ is the taken action and 
+\begin_inset Formula $s^{\prime}$
+\end_inset
+
+ is the state we reached.
+\end_layout
+
+\begin_layout Standard
+We randomized the starting corner of our agent every 50 games.
+\end_layout
+
+\begin_layout Standard
+We also improved our learning efficiency by also learning from the other
+ 3 players in the game by sending their states and rewards to our agent's
+ Q-values.
+\end_layout
+
+\begin_layout Standard
+Finally, we tried different methods to represent the states and to choose
+ the next action.
+ For each of those, we created an agent and trained each of them using different
+ model parameters.
+\end_layout
+
+\begin_layout Subsubsection
+Basic Q-learning
+\end_layout
+
+\begin_layout Standard
+The most simple representation is to use the given game state as is (described
+ in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Game-representation"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+For this agent we explored using the 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+-greedy method.
+ That is given 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+, with probability 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ we choose a random action.
+ With probability 1-
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ we choose the action with the maximal Q-value.
+ In case of a tie, we choose randomly from the maximal actions.
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Q-learning-with-feature"
+
+\end_inset
+
+Q-learning with feature extractor
+\end_layout
+
+\begin_layout Standard
+In order to to reduce the state space and the training time, we implemented
+ data extractors to extract what we think is relevant and important.
+ The extracted state included:
+\end_layout
+
+\begin_layout Itemize
+Valid directions - for each of the 4 directions, True means that direction
+ is free and on the board and False otherwise.
+\end_layout
+
+\begin_layout Itemize
+Dangerous bombs - for each direction, if there is no bomb in that direction,
+ the value is 0.
+ Otherwise, the value is an int representing the time left for the bomb
+ to explode.
+\end_layout
+
+\begin_layout Itemize
+Adjacent flames - for each direction, if there are no flames in that direction,
+ the value is False, otherwise, True.
+\end_layout
+
+\begin_layout Itemize
+Current quarter - representing which of the 4 quarters of the board the
+ agent is in.
+\end_layout
+
+\begin_layout Itemize
+Enemy in range of our bomb - True or False
+\end_layout
+
+\begin_layout Itemize
+Wood wall in range of our bomb - True or False
+\end_layout
+
+\begin_layout Itemize
+Stands on bomb - True or False
+\end_layout
+
+\begin_layout Itemize
+Powerups in range of two steps for each direction
+\end_layout
+
+\begin_layout Standard
+The reward and training setting were identical to the basic Q-learner.
+ We used 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+-greedy exploration here too.
+\end_layout
+
+\begin_layout Subsubsection
+Upper Confidence Bound (UCB)
+\end_layout
+
+\begin_layout Standard
+A disadvantage to using 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+-greedy exploration is that with some probability it choose a random action
+ with a uniform distribution.
+ Therefore, actions that look promising or not certain about won't be picked
+ with a better chance.
+ The UCB exploration method tries to fix that.
+\end_layout
+
+\begin_layout Standard
+It does so by adding a confidence score to the Q-values before choosing
+ the next action.
+ The next action for current state 
+\begin_inset Formula $s$
+\end_inset
+
+ is taken according to:
+\begin_inset Formula 
+\[
+a=\arg\max_{a^{\prime}}\left[Q\left(s,a^{\prime}\right)+c\cdot\sqrt{\frac{\ln t_{s}}{N_{s}\left(a^{\prime}\right)}}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $N_{s}\left(a^{\prime}\right)$
+\end_inset
+
+ is the number of times we chose action 
+\begin_inset Formula $a^{\prime}$
+\end_inset
+
+ at state 
+\begin_inset Formula $s$
+\end_inset
+
+ and 
+\begin_inset Formula $t_{s}\equiv\sum\limits _{a^{\prime}}N_{s}\left(a^{\prime}\right)$
+\end_inset
+
+ is the total number of times we reached state 
+\begin_inset Formula $s$
+\end_inset
+
+.
+ 
+\begin_inset Formula $c$
+\end_inset
+
+ is the confidence parameter, given to the agent the same way as 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ is given to the 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+-greedy agent.
+\end_layout
+
+\begin_layout Subsubsection
+Backplay
+\end_layout
+
+\begin_layout Standard
+One of the problems in reinforcement learning is that it requires a large
+ number of trials to learn a good policy, especially in environments with
+ sparse rewards, such as in the Pommerman environment.
+ The reward is only granted at the end of each game, and since the state
+ space is large it takes a long time for the reward to propagate to q-values
+ of earlier states.
+\end_layout
+
+\begin_layout Standard
+In a recent paper
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-2"
+
+\end_inset
+
+, a new method called Backplay for reducing training time for such problems
+ was proposed.
+ In this approach, rather than starting each training episode in the environment
+ ’s initial state, we start the agent near the end of the demonstration
+ and move the starting point backwards during the course of training until
+ we reach the initial state.
+ The paper showed that this guidance provides significant gains in sample
+ complexity in sparse reward environments.
+\end_layout
+
+\begin_layout Standard
+We implemented this concept by saving full states for the entire game.
+ Then, for every window of 5 states starting from the end of the game, we
+ randomly selected one of the states to be an initial state from which we
+ run a learning episode.
+ After each learning episode we shifted the window 5 states backwards and
+ repeated the process until we reached the true initial state.
+ The reward and other training setting were identical to the basic q-learner.
+\end_layout
+
+\begin_layout Subsection
+Snorkel
+\end_layout
+
+\begin_layout Standard
+Snorkel is an open-source framework for labeling training data, designed
+ to overcome the largest bottleneck in deploying machine learning systems
+ - getting labeled data.
+ The framework works the following order
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-3"
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Enumerate
+Writing labeling functions: Users write labeling functions that express
+ arbitrary heuristics, which can have unknown accuracies and correlations.
+ In our project the input of the functions is the full list of observables
+ as described in the 
+\begin_inset Quotes eld
+\end_inset
+
+About the game
+\begin_inset Quotes erd
+\end_inset
+
+ section.
+\end_layout
+
+\begin_layout Enumerate
+Modeling accuracies and correlations: Snorkel automatically learns a generative
+ model over the labeling functions, which allows it to estimate their accuracies
+ and correlations.
+ This step uses no ground-truth data, learning instead from the agreements
+ and disagreements of the labeling functions.
+ In some cases the generative model will not get better results than a simple
+ majority vote.
+ For this reason the system also includes an optimizer for deciding when
+ to model accuracies of labeling functions, and when learning can be skipped
+ in favor of a simple majority vote.
+ After this step Snorkel can produce a single, probabilistic label for each
+ data point.
+\end_layout
+
+\begin_layout Enumerate
+Training a discriminative model: Train a machine learning model using a
+ labeled training set.
+ In our project we used Random Forest for this step.
+\end_layout
+
+\begin_layout Standard
+Snorkel is optimized for binary classification, returning the probability
+ for the label to be 
+\begin_inset Formula $1$
+\end_inset
+
+.
+ For this reason we used binary classification for each of the 6 possible
+ actions.
+ 
+\end_layout
+
+\begin_layout Standard
+For the labeling process we used the following heuristics:
+\end_layout
+
+\begin_layout Itemize
+Adjacent flames - for each direction, if there are no flames in that direction,
+ the value is False, otherwise, True.
+\end_layout
+
+\begin_layout Itemize
+Valid directions - for each direction, True means that direction is free
+ and on the board and False otherwise.
+\end_layout
+
+\begin_layout Itemize
+Adjacent powerups - for each direction, if there are powerups in that direction,
+ the value is True, otherwise, False.
+\end_layout
+
+\begin_layout Itemize
+Is in range of bomb - for each direction, is moving there puts us in range
+ of a bomb.
+\end_layout
+
+\begin_layout Itemize
+Dead ends - return -1 for directions that will put the agent in a dead end
+ (no passage to any direction except back).
+\end_layout
+
+\begin_layout Itemize
+Enemy adjacent - is there an enemy adjacent to current position.
+ If there is, we return 1 for dropping a bomb and 0 for each other action.
+ If there is no enemy, we return 0 for all actions.
+\end_layout
+
+\begin_layout Itemize
+Wood wall adjacent - return 1 for dropping a bomb if the agent is next to
+ a wood wall.
+\end_layout
+
+\begin_layout Itemize
+Move to enemy - we return 1 for the direction that takes us to the closest
+ enemy.
+\end_layout
+
+\begin_layout Itemize
+Move to wood wall - we return 1 for the direction that takes us to the closest
+ wood wall.
+\end_layout
+
+\begin_layout Standard
+After Snorkel learned a generative model (step 2) for each of the 6 possible
+ steps, we were able to get classification for a given state.
+ We returned the action for which the probability was maximal between all
+ other actions.
+ Although Snorkel was originally designed for labeling a training set, it
+ can also be used for labeling the test set - in our application the current
+ state when the agent needs to decide on an action.
+\end_layout
+
+\begin_layout Standard
+This agent was trained for 300 games.
+\end_layout
+
+\begin_layout Subsubsection
+Random Forest
+\end_layout
+
+\begin_layout Standard
+In addition to using step 2 as a classifier, we also completed the Snorkel
+ pipeline by using a Snorkel labeled training set to train a Random Forest
+ model.
+ The training data did not include the full list of observables, but only
+ the extracted features as described in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Q-learning-with-feature"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We used the scikit-learn implementation
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-4"
+
+\end_inset
+
+ with 50 trees.
+ This agent was trained for 1,500 games.
+\end_layout
+
+\begin_layout Subsection
+Monte Carlo Tree Search
+\end_layout
+
+\begin_layout Section
+Analysis
+\end_layout
+
+\begin_layout Subsection
+Q-learning training and parameters
+\end_layout
+
+\begin_layout Standard
+We first wanted to find the best parameters for Q-learning by training the
+ 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+-greedy extractor agent (described in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Q-learning-with-feature"
+
+\end_inset
+
+) with all permutations of these parameters:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="5">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\alpha$
+\end_inset
+
+ (learning rate)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.01$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.2$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.4$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\gamma$
+\end_inset
+
+ (discount)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.8$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.9$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.99$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.999$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ (exploration)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.05$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.2$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.5$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Each of those 
+\begin_inset Formula $\left(4^{3}=\right)64$
+\end_inset
+
+ agents was trained for 2,250 games, each time staring in a random position.
+\end_layout
+
+\begin_layout Standard
+The comparison was made by choosing 2 parameters to be constant, leaving
+ 1 free parameter, and put all agents with those parameters against each
+ other (24 games for each pair of agents).
+ For each value of the free parameter we graphed its 
+\begin_inset Formula $\frac{\#\text{Wins}}{\#\text{Games}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-1"
+
+\end_inset
+
+https://www.pommerman.com/
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-2"
+
+\end_inset
+
+Resnick, Cinjon, et al.
+ "Backplay:" Man muss immer umkehren"." arXiv preprint arXiv:1807.06919 (2018).
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-3"
+
+\end_inset
+
+Ratner, Alexander, et al.
+ "Snorkel: Rapid training data creation with weak supervision." Proceedings
+ of the VLDB Endowment 11.3 (2017): 269-282.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-4"
+
+\end_inset
+
+Pedregosa, Fabian, et al.
+ "Scikit-learn: Machine learning in Python." Journal of machine learning
+ research 12.Oct (2011): 2825-2830.
+\end_layout
+
+\end_body
+\end_document
