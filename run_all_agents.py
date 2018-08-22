@@ -2,7 +2,7 @@ import pommerman
 import numpy as np
 from extracted_state_agent import ExtractedStateAgent
 from random_forest_agent import RandomForestAgent
-from MCTS import MCTSAgent
+from mcts_agent import MCTSAgent
 from ucb_extracted_state_agent import UCBExtractedStateAgent
 from snorkel_agent import SnorkelAgent
 from all_state_agent import NewAgent
@@ -64,7 +64,7 @@ all_constuctors = [RandomForestAgent, SnorkelAgent, MCTSAgent, get_backplay, get
 
 def main():
     idx = [int(sys.argv[i]) for i in range(1, len(sys.argv))]
-    idx = idx.sorted()
+    idx = sorted(idx)
     game_res = np.zeros((len(idx), len(idx)))
     game_count = np.zeros((len(idx), len(idx)))
     agents = [all_constuctors[i] for i in idx]
