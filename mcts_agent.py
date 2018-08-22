@@ -4,15 +4,16 @@ import multiprocessing
 import pommerman
 from pommerman.agents import BaseAgent, SimpleAgent
 from pommerman import constants
+import os
 
 AMOUNT_ACTIONS = 6
 EXPLORATION_CONST = 1
-NUM_CHECKS = 300
+NUM_CHECKS = 200
 GAMMA = 0.9
 EPSILON = 1e-10
 NUM_AGENTS = 4
 
-NUM_EPISODES = 512
+NUM_EPISODES = 400
 NUM_RUNNERS = 8
 
 def simulate_action(env, my_action, my_agents_id):
@@ -161,6 +162,10 @@ def runner(id, num_episodes, fifo, _args):
 
 
     for j in range(num_episodes):
+        dirname = "./agent"+str(id)+"_episode_"+str(j)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+            print("made dir")
         agent_list = []
         agent = MCTSAgent()
         for i in range(NUM_AGENTS):
@@ -189,7 +194,11 @@ def runner(id, num_episodes, fifo, _args):
             state = env.get_json_info()
             sum_rewards += step_reward[agent_id]
             step += 1
+<<<<<<< HEAD
             #env.save_json("./agent"+str(id)+"_episode_"+str(j)+"_")
+=======
+            env.save_json(dirname)
+>>>>>>> 621b72aba9b62e316d150937cfaf9f8a9dd171a0
 
         elapsed = time.time() - start_time
         env.close()
