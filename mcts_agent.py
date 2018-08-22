@@ -61,12 +61,13 @@ class MCTSAgent(BaseAgent):
         return self.policy_fcn(state)
 
     def act(self, obs, action_space):
-        state_str = str(obs)
-        if state_str in self.tree:
-            np.argmax(self.tree[state_str].q_vals)
-        else:
-            print("we randomming")
-            np.random.choice(action_space)
+        return self.search()
+#        state_str = str(obs)
+#        if state_str in self.tree:
+#            np.argmax(self.tree[state_str].q_vals)
+#        else:
+#            print("we randomming")
+#            np.random.choice(action_space)
 
     def __init__(self, *args, **kwargs):
         super(MCTSAgent, self).__init__(*args, **kwargs)
@@ -74,6 +75,10 @@ class MCTSAgent(BaseAgent):
         self.env = self.make_env()
         self.policy_fcn = lambda x: np.random.choice(6)
         self.tree = {}
+        self.state = None
+        
+    def set_state(self, state):
+        self.state = state
 
     def set_agent_id(self, agent_id):
         self.agent_id=agent_id
@@ -89,7 +94,8 @@ class MCTSAgent(BaseAgent):
         env.set_training_agent(self.agent_id)
         return env
 
-    def search(self, state):
+    def search(self, state=None):
+        state=self.state
         for i in range(NUM_CHECKS):
             self.simulate(state ,0)
         self.env._init_game_state = state
@@ -178,15 +184,16 @@ def runner(id, num_episodes, fifo, _args):
             actions = env.act(obs)
             action = agent.search(state)
             actions.insert(agent_id, action)
+            print(actions)
             obs, step_reward, done, info = env.step(actions)
             state = env.get_json_info()
             sum_rewards += step_reward[agent_id]
             step += 1
-            env.save_json("./agent"+str(id)+"_episode_"+str(j)+"_")
+            #env.save_json("./agent"+str(id)+"_episode_"+str(j)+"_")
 
         elapsed = time.time() - start_time
         env.close()
-        fifo.put((step, sum_rewards, agent_id, elapsed))
+        #fifo.put((step, sum_rewards, agent_id, elapsed))
 
 
 if __name__ == "__main__":
