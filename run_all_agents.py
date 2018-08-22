@@ -13,12 +13,13 @@ import sys
 DEBUG = False
 
 
-def run_games(agent_list):
+def run_games(agent_construct_list):
     wins = np.zeros(2)
     win_str='winners'
     episodes = 50
 
     for i_episode in range(episodes):
+        agent_list = [agent_construct_list[i]() for i in range(len(agent_construct_list))]
         for agent in agent_list:
             agent.epsilon = 0
         # Make the "Free-For-All" environment using the agent list
@@ -72,17 +73,17 @@ def main():
     for i in range(len(agents)):
         for j in range(len(agents)):
             if i != j:
-                curr_agent_list = [agents[i](), agents[j](), agents[i](), agents[j]()]
+                curr_agent_list = [agents[i], agents[j], agents[i], agents[j]]
                 curr_wins = run_games(curr_agent_list)
                 game_res[i,j] += curr_wins[0]
                 game_res[j,i] += curr_wins[1]
                 game_count[i,j] += curr_wins[0] + curr_wins[1]
                 game_count[j,i] += curr_wins[0] + curr_wins[1]
-
+    name = "_".join([str(i) for i in idx])
     final = game_res / game_count
-    np.save("wins", game_res)
-    np.save("games", game_count)
-    np.save("win_ratio", final)
+    np.save("wins_" +name , game_res)
+    np.save("games_" + name, game_count)
+    np.save("win_ratio_" + name, final)
 
 
 
