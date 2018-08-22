@@ -7,12 +7,12 @@ from pommerman import constants
 
 AMOUNT_ACTIONS = 6
 EXPLORATION_CONST = 1
-NUM_CHECKS = 5
-GAMMA = 0.1
+NUM_CHECKS = 300
+GAMMA = 0.9
 EPSILON = 1e-10
 NUM_AGENTS = 4
 
-NUM_EPISODES = 128
+NUM_EPISODES = 512
 NUM_RUNNERS = 8
 
 def simulate_action(env, my_action, my_agents_id):
@@ -182,6 +182,8 @@ def runner(id, num_episodes, fifo, _args):
             state = env.get_json_info()
             sum_rewards += step_reward[agent_id]
             step += 1
+            env.save_json("./agent"+str(id)+"_episode_"+str(j)+"_")
+
         elapsed = time.time() - start_time
         env.close()
         fifo.put((step, sum_rewards, agent_id, elapsed))
