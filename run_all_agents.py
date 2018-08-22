@@ -65,6 +65,7 @@ all_constuctors = [RandomForestAgent, SnorkelAgent, MCTSAgent, get_backplay, get
 def main():
     idx = [int(sys.argv[i]) for i in range(1, len(sys.argv))]
     idx = sorted(idx)
+    print(idx)
     game_res = np.zeros((len(idx), len(idx)))
     game_count = np.zeros((len(idx), len(idx)))
     agents = [all_constuctors[i] for i in idx]
