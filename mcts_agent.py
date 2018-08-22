@@ -194,11 +194,7 @@ def runner(id, num_episodes, fifo, _args):
             state = env.get_json_info()
             sum_rewards += step_reward[agent_id]
             step += 1
-<<<<<<< HEAD
-            #env.save_json("./agent"+str(id)+"_episode_"+str(j)+"_")
-=======
             env.save_json(dirname)
->>>>>>> 621b72aba9b62e316d150937cfaf9f8a9dd171a0
 
         elapsed = time.time() - start_time
         env.close()
