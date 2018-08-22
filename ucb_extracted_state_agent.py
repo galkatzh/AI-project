@@ -116,7 +116,7 @@ def extract_state(obs):
 class UCBExtractedStateAgent(BaseAgent):
 
     def __init__(self, name,discount, c, alpha):
-        super(ExtractedStateAgent, self).__init__()
+        super(UCBExtractedStateAgent, self).__init__()
         self.name = name
         self.last_action = 0
         self.new_action = 0
