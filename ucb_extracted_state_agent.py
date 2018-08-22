@@ -113,7 +113,7 @@ def extract_state(obs):
         return state
 
 
-class ExtractedStateAgent(BaseAgent):
+class UCBExtractedStateAgent(BaseAgent):
 
     def __init__(self, name,discount, c, alpha):
         super(ExtractedStateAgent, self).__init__()
