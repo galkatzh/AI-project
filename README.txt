@@ -22,6 +22,7 @@ File list:
 		3. ucb_extracted_state_agent.py - Q-learning with UCB exploration
 		4. snorkel_agent.py - Snorkel agent
 		5. random_forest_agent.py - Random forest agent
+		6. mcts_agent.py - Monte-Carlo tree search agent
 	Trainers:
 		1. train_q_full_state.py - traing raw-state agent
 		2. train_extracted_state.py - train extractor agent
