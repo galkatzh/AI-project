@@ -22,6 +22,7 @@ def run_games(agent_construct_list):
         agent_list = [agent_construct_list[i]() for i in range(len(agent_construct_list))]
         for agent in agent_list:
             agent.epsilon = 0
+            agent.c = 0
         for agent_index in range(len(agent_list)):
             if isinstance(agent_list[agent_index], MCTSAgent):
                 agent_list[agent_index].set_agent_id(agent_index)
@@ -57,6 +58,7 @@ def run_games(agent_construct_list):
 
 q_params = {'epsilon': 0.2, 'discount': 0.9, 'alpha': 0.1}
 ucb_params = {'c': 1, 'discount': 0.9, 'alpha': 0.1}
+backplay_params = {'epsilon': 0.1, 'discount': 0.9, 'alpha': 0.3}
 
 def get_backplay():
     return ExtractedStateAgent(name = "backplay", **q_params)
@@ -92,6 +94,7 @@ def main():
                 game_count[j,i] += curr_wins[0] + curr_wins[1]
     name = "_".join([str(i) for i in idx])
     final = game_res / game_count
+    print(final)
     np.save("wins_" +name , game_res)
     np.save("games_" + name, game_count)
     np.save("win_ratio_" + name, final)
