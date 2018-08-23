@@ -35,3 +35,5 @@ File list:
 		2. run_q_agents.py - run Q-learning agents with different parameters for comparison
 		3. run_simples.py - script used to run games and debug agents
 		4. test_agents.py - run games for statistics
+		5. run_all_agents.py - tests agents win rates
+
